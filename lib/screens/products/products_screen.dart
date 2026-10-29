@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/savings_product.dart';
+import '../../providers/product_filter_provider.dart';
 import '../../providers/savings_provider.dart';
 import '../../widgets/empty_view.dart';
 import '../../widgets/error_view.dart';
@@ -10,33 +11,103 @@ import '../../widgets/savings_product_card.dart';
 import '../../widgets/staggered_reveal.dart';
 import 'product_details_screen.dart';
 
-class ProductsScreen extends ConsumerWidget {
+class ProductsScreen extends ConsumerStatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends ConsumerState<ProductsScreen> {
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final products = ref.watch(productsProvider);
+    final filter = ref.watch(productFilterProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Savings products')),
-      body: products.when(
-        loading: () => const LoadingView(),
-        error: (_, _) => ErrorView(
-          message: 'Could not load products.',
-          onRetry: () => ref.invalidate(productsProvider),
-        ),
-        data: (list) => list.isEmpty
-            ? const EmptyView(
-                icon: Icons.inventory_2_outlined,
-                message: 'No savings products are available right now.',
-              )
-            : RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(productsProvider);
-                  await ref.read(productsProvider.future);
-                },
-                child: _ProductList(products: list),
+      body: Column(
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      key: const Key('product-search'),
+                      controller: _search,
+                      textInputAction: TextInputAction.search,
+                      decoration: InputDecoration(
+                        hintText: 'Search savings products',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: _search.text.isEmpty
+                            ? null
+                            : IconButton(
+                                tooltip: 'Clear search',
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  _search.clear();
+                                  ref.read(productFilterProvider.notifier).setQuery('');
+                                  setState(() {});
+                                },
+                              ),
+                      ),
+                      onChanged: (value) {
+                        ref.read(productFilterProvider.notifier).setQuery(value);
+                        setState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    FilterChip(
+                      key: const Key('flexible-filter'),
+                      label: const Text('Flexible only'),
+                      selected: filter.flexibleOnly,
+                      onSelected: (value) => ref
+                          .read(productFilterProvider.notifier)
+                          .setFlexibleOnly(value),
+                    ),
+                  ],
+                ),
               ),
+            ),
+          ),
+          Expanded(
+            child: products.when(
+              loading: () => const LoadingView(),
+              error: (_, _) => ErrorView(
+                message: 'Could not load products.',
+                onRetry: () => ref.invalidate(productsProvider),
+              ),
+              data: (_) {
+                final list = ref.watch(filteredProductsProvider);
+                if (list.isEmpty) {
+                  return const EmptyView(
+                    icon: Icons.search_off,
+                    message: 'No products match your search.',
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(productsProvider);
+                    await ref.read(productsProvider.future);
+                  },
+                  child: _ProductList(products: list),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
