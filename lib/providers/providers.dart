@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/auth_repository.dart';
+import '../repositories/savings_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_storage_service.dart';
 
@@ -16,4 +17,8 @@ final localStorageProvider = Provider<LocalStorageService>(
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(AuthService(), ref.watch(localStorageProvider)),
+);
+
+final savingsRepositoryProvider = Provider<SavingsRepository>(
+  (ref) => SavingsRepository(ref.watch(localStorageProvider)),
 );
