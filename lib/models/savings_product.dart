@@ -17,4 +17,13 @@ class SavingsProduct {
 
   String get durationLabel =>
       durationMonths == null ? 'Flexible' : '$durationMonths Months';
+
+  // Equal by id, so a product passed in through a route still matches the
+  // instance in a dropdown's item list.
+  @override
+  bool operator ==(Object other) =>
+      other is SavingsProduct && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
