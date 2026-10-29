@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/auth_repository.dart';
+import '../repositories/profile_repository.dart';
 import '../repositories/savings_repository.dart';
 import '../services/auth_service.dart';
 import '../services/local_storage_service.dart';
+import '../services/user_api_service.dart';
 
 // Overridden in main() with the real instance
 final sharedPreferencesProvider = Provider<SharedPreferences>(
@@ -21,4 +23,8 @@ final authRepositoryProvider = Provider<AuthRepository>(
 
 final savingsRepositoryProvider = Provider<SavingsRepository>(
   (ref) => SavingsRepository(ref.watch(localStorageProvider)),
+);
+
+final profileRepositoryProvider = Provider<ProfileRepository>(
+  (ref) => ProfileRepository(UserApiService()),
 );
