@@ -18,10 +18,11 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      fontFamily: 'Manrope',
       textTheme: const TextTheme(
-        headlineSmall: TextStyle(fontWeight: FontWeight.w700),
-        titleMedium: TextStyle(fontWeight: FontWeight.w600),
-        bodyMedium: TextStyle(height: 1.4),
+        headlineSmall: TextStyle(fontWeight: FontWeight.w800),
+        titleMedium: TextStyle(fontWeight: FontWeight.w700),
+        bodyMedium: TextStyle(height: 1.4, fontWeight: FontWeight.w400),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
