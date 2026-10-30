@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
 import '../models/savings_product.dart';
 
 class SavingsProductCard extends StatelessWidget {
@@ -18,10 +20,9 @@ class SavingsProductCard extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return Card(
-      color: scheme.surfaceContainerLow,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.lg - 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,7 +56,8 @@ class SavingsProductCard extends StatelessWidget {
                 Chip(
                   label: Text('${product.interestRate.round()}% p.a.'),
                   visualDensity: VisualDensity.compact,
-                  backgroundColor: scheme.tertiaryContainer,
+                  backgroundColor: AppColors.accent.withValues(alpha: 0.25),
+                  labelStyle: TextStyle(color: scheme.onSurface),
                   side: BorderSide.none,
                 ),
               ],
@@ -73,12 +75,13 @@ class SavingsProductCard extends StatelessWidget {
                 Icon(Icons.schedule, size: 18, color: scheme.onSurfaceVariant),
                 const SizedBox(width: 6),
                 Text(product.durationLabel, style: theme.textTheme.bodySmall),
-                const Spacer(),
-                FilledButton.tonal(
-                  onPressed: onViewDetails,
-                  child: const Text('View Details'),
-                ),
               ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            // The theme's pill button is full width; keep it out of a Row.
+            FilledButton.tonal(
+              onPressed: onViewDetails,
+              child: const Text('View details'),
             ),
           ],
         ),

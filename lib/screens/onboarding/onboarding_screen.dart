@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../providers/providers.dart';
 
@@ -13,17 +14,17 @@ class _Slide {
 
 const _slides = [
   _Slide(
-    'assets/images/onboard1.png',
+    'assets/onboarding/illustration_1.svg',
     'Keep your savings in view',
     'See your balance and your savings in one clear place.',
   ),
   _Slide(
-    'assets/images/onboard2.png',
+    'assets/onboarding/illustration_2.svg',
     'Plan for what matters',
     'Set a goal, pick a plan and follow your progress towards it.',
   ),
   _Slide(
-    'assets/images/onboard3.png',
+    'assets/onboarding/illustration_3.svg',
     'Your details stay protected',
     'Your account is protected by your login, so only you can see it.',
   ),
@@ -115,7 +116,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         children: [
                           Expanded(
                             flex: 3,
-                            child: Image.asset(
+                            child: SvgPicture.asset(
                               slide.image,
                               fit: BoxFit.contain,
                               excludeFromSemantics: true,

@@ -6,6 +6,7 @@ import '../../core/navigation.dart';
 import '../../providers/app_lock_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/providers.dart';
+import '../../widgets/pin/adaptive_pin_pad.dart';
 
 const _maxAttempts = 3;
 
@@ -17,7 +18,7 @@ class LockScreen extends ConsumerStatefulWidget {
 }
 
 class _LockScreenState extends ConsumerState<LockScreen> {
-  final _pin = TextEditingController();
+  final _pad = GlobalKey<AdaptivePinPadState>();
   String? _error;
   bool _busy = false;
   bool _showBiometric = false;
@@ -28,18 +29,13 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     _setupBiometric();
   }
 
-  @override
-  void dispose() {
-    _pin.dispose();
-    super.dispose();
-  }
-
   Future<void> _setupBiometric() async {
     try {
       final enabled = await ref.read(pinStoreProvider).biometricsEnabled();
       if (!enabled) return;
-      final available =
-          await ref.read(biometricGateProvider).canUseBiometrics();
+      final available = await ref
+          .read(biometricGateProvider)
+          .canUseBiometrics();
       if (!available || !mounted) return;
       setState(() => _showBiometric = true);
       await _tryBiometric();
@@ -94,14 +90,19 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         return;
       }
       if (!mounted) return;
-      _pin.clear();
-      setState(() => _error =
-          'Incorrect PIN. $left attempt${left == 1 ? '' : 's'} left.');
+      _pad.currentState?.clear();
+      setState(
+        () => _error =
+            'Incorrect PIN. $left attempt${left == 1 ? '' : 's'} left.',
+      );
     } catch (_) {
       if (!mounted) return;
-      _pin.clear();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Could not check your PIN. Please try again.')));
+      _pad.currentState?.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not check your PIN. Please try again.'),
+        ),
+      );
     } finally {
       _busy = false;
     }
@@ -126,27 +127,22 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock_outline,
-                        size: 48, color: theme.colorScheme.primary),
+                    Icon(
+                      Icons.lock_outline,
+                      size: 48,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(height: 16),
                     Text('Enter your PIN', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 24),
-                    TextField(
-                      key: const Key('lock-pin'),
-                      controller: _pin,
-                      autofocus: true,
-                      obscureText: true,
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: 4,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'PIN',
-                        counterText: '',
-                        errorText: _error,
+                    AdaptivePinPad(key: _pad, length: 4, onCompleted: _submit),
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        _error!,
+                        style: TextStyle(color: theme.colorScheme.error),
                       ),
-                      onChanged: _submit,
-                    ),
+                    ],
                     if (_showBiometric) ...[
                       const SizedBox(height: 16),
                       TextButton.icon(

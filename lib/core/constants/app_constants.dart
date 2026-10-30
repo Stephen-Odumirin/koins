@@ -5,5 +5,4 @@ class AppConstants {
   static const mockPassword = 'Password123';
   static const userApiBase = 'https://dummyjson.com';
   static const greetingName = 'John Doe';
-  static const totalSavings = 850000;
 }

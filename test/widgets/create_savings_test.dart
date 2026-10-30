@@ -13,19 +13,31 @@ void _tallViewport(WidgetTester tester) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
+Finder _field(String key) => find.descendant(
+  of: find.byKey(Key(key)),
+  matching: find.byType(EditableText),
+);
+
+Future<void> _next(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('create-next')));
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('empty submit shows required errors', (tester) async {
+  testWidgets('an empty name cannot go forward', (tester) async {
     _tallViewport(tester);
     await pumpWithOverrides(tester, const CreateSavingsScreen());
 
-    await tester.tap(find.text('Create'));
-    await tester.pump();
-
-    expect(find.text('Savings name is required'), findsOneWidget);
-    expect(find.text('Target amount is required'), findsOneWidget);
+    final next = tester.widget<FilledButton>(
+      find.byKey(const Key('create-next')),
+    );
+    expect(next.onPressed, isNull);
+    expect(find.text('Savings Created Successfully'), findsNothing);
   });
 
-  testWidgets('valid form with comma amounts saves and confirms', (tester) async {
+  testWidgets('valid flow with comma amounts saves and confirms', (
+    tester,
+  ) async {
     _tallViewport(tester);
     final planDb = (await tester.runAsync(openMemoryPlanDb))!;
     await pumpWithOverrides(
@@ -34,36 +46,49 @@ void main() {
       planDb: planDb,
     );
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Savings name'), 'Holiday');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Target amount'), '1,000,000');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Monthly contribution'), '50,000');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Duration (months)'), '12');
-    await tester.tap(find.text('Create'));
+    await tester.enterText(find.byType(TextField), 'Holiday');
+    await tester.pump();
+    await _next(tester);
+    await _next(tester);
+    await tester.enterText(_field('tally-target'), '1,200,000');
+    await tester.enterText(_field('tally-months'), '12');
+    await tester.pump();
+    await _next(tester);
+    await tester.tap(find.byKey(const Key('create-submit')));
     // The insert finishes on real time, outside the test's fake clock
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 200)));
-    await tester.pump(); // snackbar appears
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 200)),
+    );
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('Savings Created Successfully'), findsOneWidget); // Review Focus 2
+    expect(
+      find.text('Savings Created Successfully'),
+      findsOneWidget,
+    ); // Review Focus 2
 
     final saved = (await tester.runAsync(planDb.loadPlans))!;
-    expect(saved.single.name, 'Holiday');
+    expect(saved.length, 4); // three seeds plus the new plan
+    expect(saved.last.name, 'Holiday');
   });
 
-  testWidgets('a fractional duration is rejected', (tester) async {
+  testWidgets('a zero duration is rejected', (tester) async {
     _tallViewport(tester);
     await pumpWithOverrides(
       tester,
-      CreateSavingsScreen(initialProduct: SavingsRepository.products.first),
+      CreateSavingsScreen(initialProduct: SavingsRepository.products[2]),
     );
-    await tester.enterText(find.widgetWithText(TextFormField, 'Savings name'), 'Holiday');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Target amount'), '1000');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Monthly contribution'), '100');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Duration (months)'), '0.4');
-    await tester.tap(find.text('Create'));
+    await tester.enterText(find.byType(TextField), 'Holiday');
     await tester.pump();
-    expect(find.text('Duration (months) must be a whole number of at least 1'),
-        findsOneWidget);
+    await _next(tester);
+    await _next(tester);
+    await tester.enterText(_field('tally-target'), '120000');
+    await tester.enterText(_field('tally-months'), '0');
+    await tester.pump();
+    final next = tester.widget<FilledButton>(
+      find.byKey(const Key('create-next')),
+    );
+    expect(next.onPressed, isNull);
     expect(find.text('Savings Created Successfully'), findsNothing);
   });
 }

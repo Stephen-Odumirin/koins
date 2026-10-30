@@ -7,6 +7,7 @@ import '../repositories/savings_repository.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_gate.dart';
 import '../services/local_storage_service.dart';
+import '../services/mock_push_service.dart';
 import '../services/pin_store.dart';
 import '../services/plan_database.dart';
 import '../services/secret_store.dart';
@@ -50,4 +51,8 @@ final savingsRepositoryProvider = Provider<SavingsRepository>(
 
 final profileRepositoryProvider = Provider<ProfileRepository>(
   (ref) => ProfileRepository(UserApiService()),
+);
+
+final mockPushServiceProvider = Provider<MockPushService>(
+  (ref) => MockPushService(),
 );

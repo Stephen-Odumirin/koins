@@ -24,15 +24,19 @@ void main() {
     SecretStore? secrets,
   }) async {
     SharedPreferences.setMockInitialValues(
-        signedIn ? {'logged_in_email': 'a@b.com'} : {});
+      signedIn ? {'logged_in_email': 'a@b.com'} : {},
+    );
     final prefs = await SharedPreferences.getInstance();
     final store = secrets ?? InMemorySecretStore();
-    final container = ProviderContainer(overrides: [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-      secretStoreProvider.overrideWithValue(store),
-      biometricGateProvider
-          .overrideWithValue(FakeBiometricAuthenticator(canUse: true)),
-    ]);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        secretStoreProvider.overrideWithValue(store),
+        biometricGateProvider.overrideWithValue(
+          FakeBiometricAuthenticator(canUse: true),
+        ),
+      ],
+    );
     addTearDown(container.dispose);
     final pins = container.read(pinStoreProvider);
     if (secrets == null) {
@@ -41,17 +45,19 @@ void main() {
     }
     container.read(authProvider); // build with the stored email
 
-    await tester.pumpWidget(UncontrolledProviderScope(
-      container: container,
-      child: MaterialApp(
-        navigatorKey: appNavigatorKey,
-        builder: (context, child) => LockGate(child: child!),
-        routes: {
-          '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
-        },
-        home: const Scaffold(body: Text('APP')),
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          navigatorKey: appNavigatorKey,
+          builder: (context, child) => LockGate(child: child!),
+          routes: {
+            '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
+          },
+          home: const Scaffold(body: Text('APP')),
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
     return container;
   }
@@ -83,8 +89,9 @@ void main() {
     expect(c.read(appLockProvider), isFalse);
   });
 
-  testWidgets('pausing the app locks a signed-in user with a PIN',
-      (tester) async {
+  testWidgets('pausing the app locks a signed-in user with a PIN', (
+    tester,
+  ) async {
     final c = await pumpGate(tester, signedIn: true, hasPin: true);
     c.read(appLockProvider.notifier).unlock();
     await tester.pumpAndSettle();
@@ -102,29 +109,36 @@ void main() {
 
   testWidgets('a failing PIN check on resume still locks', (tester) async {
     final store = ThrowingSecretStore()..failReads = false;
-    final c = await pumpGate(tester,
-        signedIn: true, hasPin: true, secrets: store);
+    final c = await pumpGate(
+      tester,
+      signedIn: true,
+      hasPin: true,
+      secrets: store,
+    );
     store.failReads = true;
     await background(tester);
     expect(c.read(appLockProvider), isTrue);
     expect(find.byType(LockScreen), findsOneWidget);
   });
 
-  testWidgets('biometric button is absent when biometrics are disabled',
-      (tester) async {
+  testWidgets('biometric button is absent when biometrics are disabled', (
+    tester,
+  ) async {
     await pumpGate(tester, signedIn: true, hasPin: true, biometrics: false);
     expect(find.byKey(const Key('lock-biometric')), findsNothing);
   });
 
-  testWidgets('biometric button shows when enabled and available',
-      (tester) async {
+  testWidgets('biometric button shows when enabled and available', (
+    tester,
+  ) async {
     await pumpGate(tester, signedIn: true, hasPin: true, biometrics: true);
     await background(tester);
     expect(find.byKey(const Key('lock-biometric')), findsOneWidget);
   });
 
-  testWidgets('Back on the lock does not reach the screen underneath',
-      (tester) async {
+  testWidgets('Back on the lock does not reach the screen underneath', (
+    tester,
+  ) async {
     final c = await pumpGate(tester, signedIn: true, hasPin: true);
     c.read(appLockProvider.notifier).unlock();
     await tester.pumpAndSettle();
@@ -147,11 +161,15 @@ void main() {
     expect(find.text('DASHBOARD', skipOffstage: false), findsOneWidget);
   });
 
-  testWidgets('unlocking removes the lock route and shows the app',
-      (tester) async {
+  testWidgets('unlocking removes the lock route and shows the app', (
+    tester,
+  ) async {
     final c = await pumpGate(tester, signedIn: true, hasPin: true);
     await background(tester);
-    await tester.enterText(find.byKey(const Key('lock-pin')), '1234');
+    for (final d in '1234'.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await tester.pumpAndSettle();
     expect(c.read(appLockProvider), isFalse);
     expect(find.byType(LockScreen), findsNothing);
@@ -166,7 +184,10 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.byType(LockScreen, skipOffstage: false), findsOneWidget);
-    await tester.enterText(find.byKey(const Key('lock-pin')), '1234');
+    for (final d in '1234'.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await tester.pumpAndSettle();
     expect(c.read(appLockProvider), isFalse);
     expect(find.byType(LockScreen, skipOffstage: false), findsNothing);

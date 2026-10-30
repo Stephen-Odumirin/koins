@@ -25,13 +25,13 @@ void main() {
     ]);
   });
 
-  test('dashboard seeds start with Emergency Fund and there are three', () async {
+  test('getUserPlans returns the three seeds first', () async {
     final planDb = await openMemoryPlanDb();
     addTearDown(planDb.close);
-    final repo = SavingsRepository(planDb);
-    expect(repo.seedPlansForDashboard.length, 3);
-    expect(repo.seedPlansForDashboard.first.name, 'Emergency Fund');
-    expect(repo.seedPlansForDashboard.first.targetAmount, 120000);
+    final plans = await SavingsRepository(planDb).getUserPlans();
+    expect(plans.length, 3);
+    expect(plans.first.name, 'Emergency Fund');
+    expect(plans.first.targetAmount, 120000);
   });
 
   test('created plan is persisted and returned', () async {
@@ -41,6 +41,6 @@ void main() {
 
     await repo.createPlan(_plan);
 
-    expect((await repo.getUserPlans()).single.name, _plan.name);
+    expect((await repo.getUserPlans()).last.name, _plan.name);
   });
 }

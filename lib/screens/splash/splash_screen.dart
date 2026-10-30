@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lottie/lottie.dart';
 
 import '../../providers/app_lock_provider.dart';
 import '../../providers/providers.dart';
 import '../../utils/startup_route.dart';
-import '../../widgets/brand_mark.dart';
+import '../../widgets/brand_loader.dart';
 
 /// Shows the brand while the loading animation plays, then routes to the
 /// first screen. Never stays longer than [_maxWait].
@@ -18,28 +17,19 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   static const _maxWait = Duration(seconds: 3);
-  static const _reducedMotionWait = Duration(seconds: 2);
+  static const _holdTime = Duration(seconds: 2);
 
-  late final AnimationController _controller;
   final Completer<void> _animationDone = Completer<void>();
   Timer? _maxTimer;
-  Timer? _reducedTimer;
+  Timer? _holdTimer;
   bool _navigated = false;
   bool _reduced = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this)
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed &&
-            !_animationDone.isCompleted) {
-          _animationDone.complete();
-        }
-      });
     WidgetsBinding.instance.addPostFrameCallback((_) => _start());
   }
 
@@ -52,11 +42,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _start() async {
     if (!mounted) return;
+    // Under reduced motion nothing animates, so route immediately.
     if (_reduced) {
-      _reducedTimer = Timer(_reducedMotionWait, () {
-        if (!_animationDone.isCompleted) _animationDone.complete();
-      });
+      _goNext();
+      return;
     }
+    // The loader is a looping mark with no end of its own, so the hold is a
+    // fixed 2 s.
+    _holdTimer = Timer(_holdTime, () {
+      if (!_animationDone.isCompleted) _animationDone.complete();
+    });
     final Future<void> wait = _animationDone.future;
     // The timeout wins when the animation is slow or fails to load.
     final timeout = Completer<void>();
@@ -65,7 +60,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     });
     await Future.any<void>([wait, timeout.future]);
     _maxTimer?.cancel();
-    _reducedTimer?.cancel();
+    _holdTimer?.cancel();
     _goNext();
   }
 
@@ -111,8 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void dispose() {
     _maxTimer?.cancel();
-    _reducedTimer?.cancel();
-    _controller.dispose();
+    _holdTimer?.cancel();
     super.dispose();
   }
 
@@ -123,21 +117,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const BrandMark(key: Key('splash-logo'), size: 96),
-            if (!_reduced) ...[
-              const SizedBox(height: 24),
-              Lottie.asset(
-                'assets/animation_icon/Loading.json',
-                controller: _controller,
-                width: 120,
-                height: 120,
-                onLoaded: (composition) {
-                  _controller.duration = composition.duration;
-                  _controller.forward();
-                },
-                errorBuilder: (_, __, ___) => const SizedBox(height: 120),
-              ),
-            ],
+            BrandLoader(
+              key: const Key('splash-logo'),
+              size: 96,
+              reduceMotion: _reduced,
+            ),
           ],
         ),
       ),

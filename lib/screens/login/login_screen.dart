@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/app_exception.dart';
+import '../../models/app_notification.dart';
+import '../../providers/notifications_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/providers.dart';
 import '../../utils/validators.dart';
@@ -48,6 +50,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _loading = true);
     try {
       await ref.read(authProvider.notifier).login(_email.text, _password.text);
+      ref.read(notificationsProvider.notifier).deliver(
+            AppNotification(
+              id: DateTime.now().microsecondsSinceEpoch.toString(),
+              title: 'Welcome to KoinsMFB',
+              body: 'Your savings are one tap away.',
+              receivedAt: DateTime.now(),
+            ),
+          );
       if (!mounted) return;
       final hasPin = await ref.read(pinStoreProvider).hasPin();
       if (!mounted) return;

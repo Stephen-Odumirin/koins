@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:savings_app/providers/notifications_provider.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/in_memory_secret_store.dart';
 
-Future<void> _pumpLogin(
+Future<ProviderContainer> _pumpLogin(
   WidgetTester tester, {
   bool hasPin = true,
   Object? routeArgument,
@@ -40,6 +41,7 @@ Future<void> _pumpLogin(
     ),
   );
   await tester.pumpAndSettle();
+  return container;
 }
 
 void main() {
@@ -72,6 +74,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('DASHBOARD'), findsOneWidget);
+  });
+
+  testWidgets('a successful sign-in delivers the welcome notification', (
+    tester,
+  ) async {
+    final container = await _pumpLogin(tester);
+    expect(container.read(notificationsProvider), isEmpty);
+
+    await tester.enterText(find.byKey(const Key('login-email')), 'test@bank.com');
+    await tester.enterText(find.byKey(const Key('login-password')), 'Password123');
+    await tester.tap(find.byKey(const Key('login-submit')));
+    await tester.pumpAndSettle();
+
+    final items = container.read(notificationsProvider);
+    expect(items, hasLength(1));
+    expect(items.single.title, 'Welcome to KoinsMFB');
+    expect(items.single.body, 'Your savings are one tap away.');
+  });
+
+  testWidgets('a failed sign-in delivers nothing', (tester) async {
+    final container = await _pumpLogin(tester);
+    await tester.enterText(find.byKey(const Key('login-email')), 'test@bank.com');
+    await tester.enterText(find.byKey(const Key('login-password')), 'wrongpass1');
+    await tester.tap(find.byKey(const Key('login-submit')));
+    await tester.pumpAndSettle();
+    expect(container.read(notificationsProvider), isEmpty);
   });
 
   testWidgets('submit is disabled while signing in (double tap guard)', (tester) async {

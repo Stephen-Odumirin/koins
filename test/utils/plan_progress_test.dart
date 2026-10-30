@@ -2,30 +2,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/models/savings_plan.dart';
 import 'package:savings_app/utils/plan_progress.dart';
 
-SavingsPlan _plan(DateTime createdAt, int months) => SavingsPlan(
+SavingsPlan _plan(int target, int saved) => SavingsPlan(
       id: 'x',
       name: 'x',
       productType: 'x',
-      targetAmount: 1,
+      targetAmount: target,
       monthlyContribution: 1,
-      durationMonths: months,
-      createdAt: createdAt,
+      durationMonths: 12,
+      createdAt: DateTime(2026, 1, 1),
+      savedAmount: saved,
     );
 
 void main() {
-  test('about half way through a 12 month plan is about 0.5', () {
-    final plan = _plan(DateTime(2026, 1, 1), 12);
-    final progress = planTimeProgress(plan, DateTime(2026, 7, 1));
-    expect(progress, closeTo(0.5, 0.02));
+  test('progress is saved over target', () {
+    expect(planProgress(_plan(350000, 280000)), closeTo(0.8, 1e-9));
   });
 
-  test('future start clamps to 0', () {
-    final plan = _plan(DateTime(2027, 1, 1), 12);
-    expect(planTimeProgress(plan, DateTime(2026, 7, 1)), 0);
+  test('zero target gives 0', () {
+    expect(planProgress(_plan(0, 100)), 0);
   });
 
-  test('past the end clamps to 1', () {
-    final plan = _plan(DateTime(2020, 1, 1), 6);
-    expect(planTimeProgress(plan, DateTime(2026, 7, 1)), 1);
+  test('over-saved clamps to 1', () {
+    expect(planProgress(_plan(100, 250)), 1);
   });
 }

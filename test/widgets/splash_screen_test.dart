@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lottie/lottie.dart';
+import 'package:savings_app/widgets/brand_loader.dart';
+import 'package:savings_app/widgets/brand_mark.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,10 +55,12 @@ void main() {
     expect(find.text('dashboard-page'), findsOneWidget);
   });
 
-  testWidgets('a failing PIN check sends the user to login, not stuck',
-      (tester) async {
-    await _pumpSplash(tester, {'logged_in_email': 'a@b.com'},
-        secrets: ThrowingSecretStore());
+  testWidgets('a failing PIN check sends the user to login, not stuck', (
+    tester,
+  ) async {
+    await _pumpSplash(tester, {
+      'logged_in_email': 'a@b.com',
+    }, secrets: ThrowingSecretStore());
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
     expect(find.text('login-page'), findsOneWidget);
@@ -80,39 +83,36 @@ void main() {
     expect(find.text('onboarding-page'), findsOneWidget);
   });
 
-  testWidgets('reduced motion shows no Lottie and still moves on in 3s', (
+  testWidgets('reduced motion shows a static loader and moves on at once', (
     tester,
   ) async {
     await _pumpSplash(tester, {
       'onboarding_complete': true,
     }, disableAnimations: true);
     expect(find.byKey(const Key('splash-logo')), findsOneWidget);
-    expect(find.byType(LottieBuilder), findsNothing);
-    expect(find.byType(Lottie), findsNothing);
-    await tester.pump(const Duration(seconds: 3));
+    expect(find.byType(BrandLoader), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
     expect(find.text('login-page'), findsOneWidget);
+  });
+
+  testWidgets('the splash shows exactly one mark', (tester) async {
+    await _pumpSplash(tester, {'onboarding_complete': true});
+    expect(find.byType(BrandLoader), findsOneWidget);
+    expect(find.byType(BrandMark), findsNothing);
+    expect(
+      tester.widget(find.byKey(const Key('splash-logo'))),
+      isA<BrandLoader>(),
+    );
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('navigates when the animation ends, before the 3s cap', (
     tester,
   ) async {
     await _pumpSplash(tester, {'onboarding_complete': true});
-    // Poll until the Lottie composition has loaded (the splash starts the
-    // controller forward on load); fail after 2 seconds.
-    var loaded = false;
-    await tester.runAsync(() async {
-      for (var i = 0; i < 200; i++) {
-        await Future<void>.delayed(const Duration(milliseconds: 10));
-        await tester.pump();
-        final lottie = tester.widget<LottieBuilder>(find.byType(LottieBuilder));
-        if (lottie.controller?.status == AnimationStatus.forward) {
-          loaded = true;
-          break;
-        }
-      }
-    });
-    expect(loaded, isTrue, reason: 'Lottie composition never loaded');
+    expect(find.byType(BrandLoader), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 2100));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));

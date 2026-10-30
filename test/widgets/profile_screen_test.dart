@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:savings_app/models/app_notification.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/repositories/profile_repository.dart';
 import 'package:savings_app/screens/profile/profile_screen.dart';
+import 'package:savings_app/services/mock_push_service.dart';
 import 'package:savings_app/services/user_api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +20,17 @@ ProfileRepository _repo(http.Response Function() response) => ProfileRepository(
       UserApiService(client: MockClient((_) async => response())),
     );
 
-Future<void> _pump(WidgetTester tester, ProfileRepository repo) async {
+MockPushService _serviceWith(List<AppNotification> items) {
+  final service = MockPushService();
+  items.forEach(service.deliver);
+  return service;
+}
+
+Future<void> _pump(
+  WidgetTester tester,
+  ProfileRepository repo, {
+  List<AppNotification> unread = const [],
+}) async {
   SharedPreferences.setMockInitialValues({'logged_in_email': 'test@bank.com'});
   final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
@@ -27,6 +39,9 @@ Future<void> _pump(WidgetTester tester, ProfileRepository repo) async {
         sharedPreferencesProvider.overrideWithValue(prefs),
         secretStoreProvider.overrideWithValue(InMemorySecretStore()),
         profileRepositoryProvider.overrideWithValue(repo),
+        mockPushServiceProvider.overrideWithValue(
+          _serviceWith(unread),
+        ),
       ],
       child: MaterialApp(
         routes: {'/login': (_) => const Scaffold(body: Text('LOGIN'))},
@@ -60,5 +75,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('LOGIN'), findsOneWidget);
+  });
+
+  testWidgets('shows a Notifications tile with an unread badge', (tester) async {
+    await _pump(
+      tester,
+      _repo(() => http.Response(_userJson, 200)),
+      unread: [
+        AppNotification(id: '1', title: 'A', body: 'x', receivedAt: DateTime(2026, 1, 1)),
+        AppNotification(id: '2', title: 'B', body: 'y', receivedAt: DateTime(2026, 1, 2)),
+      ],
+    );
+
+    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.widgetWithText(Badge, '2'), findsOneWidget);
+  });
+
+  testWidgets('no badge when everything is read', (tester) async {
+    await _pump(tester, _repo(() => http.Response(_userJson, 200)));
+
+    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.byType(Badge), findsNothing);
   });
 }

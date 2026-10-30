@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/onboarding/onboarding_screen.dart';
@@ -180,5 +181,19 @@ void main() {
     }
     expect(tester.takeException(), isNull);
     expect(find.text('Get started'), findsOneWidget);
+  });
+
+  testWidgets('each slide shows an SVG illustration and no PNG',
+      (tester) async {
+    await _pump(tester);
+
+    for (var i = 1; i <= 3; i++) {
+      expect(find.byType(Image), findsNothing);
+      final svg = tester.widget<SvgPicture>(find.byType(SvgPicture));
+      final loader = svg.bytesLoader as SvgAssetLoader;
+      expect(loader.assetName, 'assets/onboarding/illustration_$i.svg');
+      expect(tester.takeException(), isNull);
+      if (i < 3) await _next(tester);
+    }
   });
 }

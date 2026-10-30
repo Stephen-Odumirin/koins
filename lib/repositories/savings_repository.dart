@@ -14,7 +14,8 @@ class SavingsRepository {
       name: 'Target Savings',
       interestRate: 12,
       durationMonths: 12,
-      description: 'Save towards a specific goal with fixed monthly contributions.',
+      description:
+          'Save towards a specific goal with fixed monthly contributions.',
       minDeposit: 5000,
     ),
     SavingsProduct(
@@ -30,7 +31,8 @@ class SavingsRepository {
       name: 'Education Savings',
       interestRate: 10,
       durationMonths: null,
-      description: 'Build a fund for school fees, with withdrawals when you need them.',
+      description:
+          'Build a fund for school fees, with withdrawals when you need them.',
       minDeposit: 5000,
     ),
     SavingsProduct(
@@ -42,39 +44,6 @@ class SavingsRepository {
       minDeposit: 2000,
     ),
   ];
-
-  // Shown on the dashboard. In memory only, not persisted.
-  static final _seedPlans = [
-    SavingsPlan(
-      id: 'seed-1',
-      name: 'Emergency Fund',
-      productType: 'Fixed Deposit',
-      targetAmount: 120000,
-      monthlyContribution: 10000,
-      durationMonths: 12,
-      createdAt: DateTime(2026, 1, 1),
-    ),
-    SavingsPlan(
-      id: 'seed-2',
-      name: 'School Fees 2027',
-      productType: 'Education Savings',
-      targetAmount: 350000,
-      monthlyContribution: 25000,
-      durationMonths: 14,
-      createdAt: DateTime(2026, 3, 15),
-    ),
-    SavingsPlan(
-      id: 'seed-3',
-      name: 'New Laptop',
-      productType: 'Target Savings',
-      targetAmount: 480000,
-      monthlyContribution: 40000,
-      durationMonths: 12,
-      createdAt: DateTime(2026, 5, 10),
-    ),
-  ];
-
-  List<SavingsPlan> get seedPlansForDashboard => _seedPlans;
 
   Future<List<SavingsProduct>> getProducts() async => products;
 

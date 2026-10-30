@@ -11,9 +11,7 @@ final productsProvider = FutureProvider<List<SavingsProduct>>((ref) {
 class SavingsPlansNotifier extends AsyncNotifier<List<SavingsPlan>> {
   @override
   Future<List<SavingsPlan>> build() async {
-    final repo = ref.watch(savingsRepositoryProvider);
-    final saved = await repo.getUserPlans();
-    return [...repo.seedPlansForDashboard, ...saved];
+    return ref.watch(savingsRepositoryProvider).getUserPlans();
   }
 
   Future<void> createPlan(SavingsPlan plan) async {
@@ -25,5 +23,5 @@ class SavingsPlansNotifier extends AsyncNotifier<List<SavingsPlan>> {
 
 final savingsPlansProvider =
     AsyncNotifierProvider<SavingsPlansNotifier, List<SavingsPlan>>(
-  SavingsPlansNotifier.new,
-);
+      SavingsPlansNotifier.new,
+    );

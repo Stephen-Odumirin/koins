@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/auth/pin_setup_screen.dart';
+import 'package:savings_app/widgets/pin/pin_dots.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_biometric_authenticator.dart';
 import '../helpers/in_memory_secret_store.dart';
 
-// The PIN field's cursor blinks forever, so pumpAndSettle never returns.
+// Pump in short steps; the screens finish async work off the test clock.
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 5; i++) {
     await tester.runAsync(
@@ -56,13 +57,10 @@ void main() {
   }
 
   Future<void> enter(WidgetTester tester, String pin) async {
-    await tester.enterText(
-      find.descendant(
-        of: find.byKey(const Key('pin-setup-field')),
-        matching: find.byType(EditableText),
-      ),
-      pin,
-    );
+    for (final d in pin.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await settle(tester);
   }
 
@@ -82,13 +80,7 @@ void main() {
     expect(find.text("PINs don't match. Try again."), findsOneWidget);
     expect(find.text('Create a 4-digit PIN'), findsOneWidget);
     expect(await container.read(pinStoreProvider).hasPin(), isFalse);
-    final field = tester.widget<EditableText>(
-      find.descendant(
-        of: find.byKey(const Key('pin-setup-field')),
-        matching: find.byType(EditableText),
-      ),
-    );
-    expect(field.controller.text, isEmpty);
+    expect(tester.widget<PinDots>(find.byType(PinDots)).filled, 0);
   });
 
   testWidgets('a matching PIN is saved and offers biometrics', (tester) async {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../models/savings_product.dart';
+import '../savings/create_savings_screen.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/staggered_reveal.dart';
 
@@ -48,34 +50,36 @@ class ProductDetailsScreen extends StatelessWidget {
               const SizedBox(height: 24),
               StaggeredReveal(
                 index: 2,
-                child: Row(
-                  children: [
-                    _Stat(
-                      label: 'Interest rate',
-                      value: '${product.interestRate.round()}%',
-                    ),
-                    const SizedBox(width: 12),
-                    _Stat(
-                      label: 'Minimum deposit',
-                      value: formatNaira(product.minDeposit),
-                    ),
-                    const SizedBox(width: 12),
-                    _Stat(
-                      label: 'Duration',
-                      value: product.durationLabel,
-                    ),
-                  ],
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _Stat(
+                        label: 'Interest rate',
+                        value: '${product.interestRate.round()}%',
+                      ),
+                      const SizedBox(width: 12),
+                      _Stat(
+                        label: 'Minimum deposit',
+                        value: formatNaira(product.minDeposit),
+                      ),
+                      const SizedBox(width: 12),
+                      _Stat(label: 'Duration', value: product.durationLabel),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
               StaggeredReveal(
                 index: 3,
                 child: FilledButton(
-                  onPressed: () => Navigator.of(context).pushNamed(
-                    '/create-savings',
-                    arguments: product,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          CreateSavingsScreen(initialProduct: product),
+                    ),
                   ),
-                  child: const Text('Create Savings'),
+                  child: const Text('Create savings'),
                 ),
               ),
             ],
@@ -100,7 +104,7 @@ class _Stat extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard - 4),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

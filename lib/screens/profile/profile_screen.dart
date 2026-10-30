@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_spacing.dart';
 import '../../models/user_profile.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notifications_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/loading_view.dart';
@@ -42,7 +44,7 @@ class _ProfileBody extends ConsumerWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
             StaggeredReveal(
               index: 0,
@@ -72,9 +74,13 @@ class _ProfileBody extends ConsumerWidget {
               index: 2,
               child: _InfoTile(icon: Icons.phone_outlined, label: 'Phone number', value: user.phone),
             ),
-            const SizedBox(height: 32),
             StaggeredReveal(
               index: 3,
+              child: const _NotificationsTile(),
+            ),
+            const SizedBox(height: 32),
+            StaggeredReveal(
+              index: 4,
               child: FilledButton.tonalIcon(
                 onPressed: () async {
                   await ref.read(authProvider.notifier).logout();
@@ -106,12 +112,32 @@ class _InfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      color: theme.colorScheme.surfaceContainerLow,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: ListTile(
         leading: Icon(icon, color: theme.colorScheme.primary),
         title: Text(label, style: theme.textTheme.bodySmall),
         subtitle: Text(value, style: theme.textTheme.titleMedium),
+      ),
+    );
+  }
+}
+
+class _NotificationsTile extends ConsumerWidget {
+  const _NotificationsTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final unread = ref.watch(unreadCountProvider);
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: ListTile(
+        leading: Icon(Icons.notifications_outlined, color: theme.colorScheme.primary),
+        title: Text('Notifications', style: theme.textTheme.titleMedium),
+        trailing: unread > 0
+            ? Badge(label: Text('$unread'), child: const Icon(Icons.chevron_right))
+            : const Icon(Icons.chevron_right),
+        onTap: () => Navigator.of(context).pushNamed('/notifications'),
       ),
     );
   }

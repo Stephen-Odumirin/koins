@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A TextFormField that picks up the theme's input decoration.
 class AppTextField extends StatelessWidget {
@@ -14,6 +15,9 @@ class AppTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.autofillHints,
     this.enabled = true,
+    this.inputFormatters,
+    this.onChanged,
+    this.readOnly = false,
   });
 
   final TextEditingController controller;
@@ -26,6 +30,9 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onFieldSubmitted;
   final Iterable<String>? autofillHints;
   final bool enabled;
+  final List<TextInputFormatter>? inputFormatters;
+  final ValueChanged<String>? onChanged;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +45,10 @@ class AppTextField extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       autofillHints: autofillHints,
       enabled: enabled,
-      decoration: InputDecoration(
-        labelText: label,
-        suffixIcon: suffixIcon,
-      ),
+      inputFormatters: inputFormatters,
+      onChanged: onChanged,
+      readOnly: readOnly,
+      decoration: InputDecoration(labelText: label, suffixIcon: suffixIcon),
     );
   }
 }

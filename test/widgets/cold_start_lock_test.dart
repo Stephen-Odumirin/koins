@@ -17,49 +17,59 @@ void main() {
   Future<ProviderContainer> pumpApp(WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({'logged_in_email': 'a@b.com'});
     final prefs = await SharedPreferences.getInstance();
-    final container = ProviderContainer(overrides: [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-      secretStoreProvider.overrideWithValue(InMemorySecretStore()),
-      biometricGateProvider
-          .overrideWithValue(FakeBiometricAuthenticator(canUse: true)),
-    ]);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        secretStoreProvider.overrideWithValue(InMemorySecretStore()),
+        biometricGateProvider.overrideWithValue(
+          FakeBiometricAuthenticator(canUse: true),
+        ),
+      ],
+    );
     addTearDown(container.dispose);
     await container.read(pinStoreProvider).savePin('1234');
     container.read(authProvider);
-    await tester.pumpWidget(UncontrolledProviderScope(
-      container: container,
-      child: MaterialApp(
-        navigatorKey: appNavigatorKey,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(disableAnimations: true),
-          child: LockGate(child: child!),
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          navigatorKey: appNavigatorKey,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: LockGate(child: child!),
+          ),
+          home: const SplashScreen(),
+          routes: {
+            '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
+            '/lock': (_) => const LockScreen(),
+            '/login': (_) => const Scaffold(body: Text('LOGIN')),
+            '/onboarding': (_) => const Scaffold(body: Text('ONBOARDING')),
+          },
         ),
-        home: const SplashScreen(),
-        routes: {
-          '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
-          '/lock': (_) => const LockScreen(),
-          '/login': (_) => const Scaffold(body: Text('LOGIN')),
-          '/onboarding': (_) => const Scaffold(body: Text('ONBOARDING')),
-        },
       ),
-    ));
+    );
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
     return container;
   }
 
-  testWidgets('splash with a PIN shows the lock, not the dashboard',
-      (tester) async {
+  testWidgets('splash with a PIN shows the lock, not the dashboard', (
+    tester,
+  ) async {
     final c = await pumpApp(tester);
     expect(find.byType(LockScreen), findsOneWidget);
     expect(find.text('DASHBOARD', skipOffstage: false), findsNothing);
     expect(c.read(appLockProvider), isTrue);
   });
 
-  testWidgets('unlock after a cold-start lock reaches the dashboard',
-      (tester) async {
+  testWidgets('unlock after a cold-start lock reaches the dashboard', (
+    tester,
+  ) async {
     final c = await pumpApp(tester);
-    await tester.enterText(find.byKey(const Key('lock-pin')), '1234');
+    for (final d in '1234'.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await tester.pumpAndSettle();
     expect(find.text('DASHBOARD'), findsOneWidget);
     expect(find.byType(LockScreen, skipOffstage: false), findsNothing);
@@ -68,17 +78,24 @@ void main() {
     expect(appNavigatorKey.currentState!.canPop(), isFalse);
   });
 
-  testWidgets('unlock removes the lock route even with a route on top',
-      (tester) async {
+  testWidgets('unlock removes the lock route even with a route on top', (
+    tester,
+  ) async {
     final c = await pumpApp(tester);
-    await tester.enterText(find.byKey(const Key('lock-pin')), '1234');
+    for (final d in '1234'.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await tester.pumpAndSettle();
     // Lock again from the background, then cover the lock with another route.
     c.read(appLockProvider.notifier).lock();
     await tester.pumpAndSettle();
     expect(find.byType(LockScreen), findsOneWidget);
-    appNavigatorKey.currentState!.push(MaterialPageRoute<void>(
-        builder: (_) => const Scaffold(body: Text('ON TOP'))));
+    appNavigatorKey.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) => const Scaffold(body: Text('ON TOP')),
+      ),
+    );
     await tester.pumpAndSettle();
     c.read(appLockProvider.notifier).unlock();
     await tester.pumpAndSettle();

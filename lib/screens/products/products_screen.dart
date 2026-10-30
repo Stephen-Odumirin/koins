@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/app_spacing.dart';
 import '../../models/savings_product.dart';
 import '../../providers/product_filter_provider.dart';
 import '../../providers/savings_provider.dart';
@@ -40,7 +41,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 640),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  12,
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -58,18 +64,23 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                                 icon: const Icon(Icons.close),
                                 onPressed: () {
                                   _search.clear();
-                                  ref.read(productFilterProvider.notifier).setQuery('');
+                                  ref
+                                      .read(productFilterProvider.notifier)
+                                      .setQuery('');
                                   setState(() {});
                                 },
                               ),
                       ),
                       onChanged: (value) {
-                        ref.read(productFilterProvider.notifier).setQuery(value);
+                        ref
+                            .read(productFilterProvider.notifier)
+                            .setQuery(value);
                         setState(() {});
                       },
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     FilterChip(
+                      shape: const StadiumBorder(),
                       key: const Key('flexible-filter'),
                       label: const Text('Flexible only'),
                       selected: filter.flexibleOnly,
@@ -124,7 +135,7 @@ class _ProductList extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 640),
         child: ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           itemCount: products.length,
           itemBuilder: (context, i) {
             final product = products[i];

@@ -12,6 +12,7 @@ import 'screens/auth/lock_screen.dart';
 import 'screens/auth/pin_setup_screen.dart';
 import 'screens/dashboard/dashboard_screen.dart';
 import 'screens/login/login_screen.dart';
+import 'screens/notifications/notifications_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/products/products_screen.dart';
 import 'screens/profile/profile_screen.dart';
@@ -19,7 +20,6 @@ import 'screens/savings/create_savings_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'widgets/lock_gate.dart';
 import 'services/plan_database.dart';
-import 'services/plan_migration.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,13 +33,6 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final planDb = await PlanDatabase.open();
-  // A failed migration keeps the old key, so plans are retried next launch.
-  // The app still starts.
-  try {
-    await migratePlansFromPreferences(prefs, planDb);
-  } catch (e) {
-    debugPrint('Plan migration failed, will retry next launch: $e');
-  }
 
   runApp(
     ProviderScope(
@@ -75,10 +68,11 @@ class SavingsApp extends StatelessWidget {
         '/dashboard': (_) => const DashboardScreen(),
         '/products': (_) => const ProductsScreen(),
         '/profile': (_) => const ProfileScreen(),
+        '/notifications': (_) => const NotificationsScreen(),
         '/create-savings': (context) => CreateSavingsScreen(
-              initialProduct: ModalRoute.of(context)?.settings.arguments
-                  as SavingsProduct?,
-            ),
+          initialProduct:
+              ModalRoute.of(context)?.settings.arguments as SavingsProduct?,
+        ),
       },
     );
   }

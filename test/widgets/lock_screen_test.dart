@@ -60,7 +60,10 @@ void main() {
   }
 
   Future<void> enter(WidgetTester tester, String pin) async {
-    await tester.enterText(find.byKey(const Key('lock-pin')), pin);
+    for (final d in pin.split('')) {
+      await tester.tap(find.byKey(Key('pin-key-$d')));
+      await tester.pump(const Duration(milliseconds: 120));
+    }
     await tester.pumpAndSettle();
   }
 
