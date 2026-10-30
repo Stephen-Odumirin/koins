@@ -12,6 +12,7 @@ import '../../widgets/savings_product_card.dart';
 import '../../widgets/staggered_reveal.dart';
 import 'product_details_screen.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/messages.dart';
 
 class ProductsScreen extends ConsumerStatefulWidget {
   const ProductsScreen({super.key});
@@ -103,7 +104,19 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                 onRetry: () => ref.invalidate(productsProvider),
               ),
               data: (_) {
-                final list = ref.watch(filteredProductsProvider);
+                final q = ref
+                    .watch(productFilterProvider)
+                    .query
+                    .trim()
+                    .toLowerCase();
+                final list = ref
+                    .watch(filteredProductsProvider)
+                    .where(
+                      (p) =>
+                          q.isEmpty ||
+                          l10n.productName(p).toLowerCase().contains(q),
+                    )
+                    .toList();
                 if (list.isEmpty) {
                   return EmptyView(
                     icon: Icons.search_off,

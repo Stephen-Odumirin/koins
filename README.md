@@ -61,7 +61,7 @@ Fonts: **Manrope** (SIL Open Font License 1.1), bundled under `assets/fonts/`. S
 - PIN setup after the first login (4 digits), with an optional biometric offer
 - Lock on resume (app sent to the background) and on cold start; 3 wrong PIN attempts sign the user out
 - Dashboard: greeting, total savings (sum of saved amounts) with a count-up animation, quick actions, recent savings newest first (three shown, "See all" when there are more), progress rings
-- Savings products: searchable list; details page with a Create savings button that pre-selects the product
+- Savings products: searchable list with a "Flexible only" filter; details page with a Create savings button that pre-selects the product
 - Create savings as a stepper. Target = monthly amount x months is enforced in both directions; fixed-term products lock the duration. Ends with a success confirmation
 - Saved plan details: the progress ring is saved / target, the same rule as the dashboard tile
 - Profile loaded from `dummyjson.com`, with logout back to login
@@ -99,9 +99,9 @@ Layered: screens, then providers, then repositories, then services. Models are p
 - Biometrics are optional. The user is offered them after setting a PIN and can always unlock with the PIN.
 - The PIN is 4 digits.
 - Android is the target. iOS is not built or tested.
-- The Koins asset bundle (icon, logo, onboarding images, loading animation) is provided by the owner. Its licence is unverified; see `ASSETS.md`.
+- The Koins asset bundle (icon and logo) is provided by the owner. Its licence is unverified; see `ASSETS.md`.
 - The product list is static seed data. Search runs on that list.
-- The dashboard total is the sum of saved amounts. The three seeded plans give N850,000. A newly created plan starts with nothing saved, because the app has no deposit records.
+- The dashboard total is the sum of saved amounts. The three seeded plans give N850,000. A newly created plan starts with its opening deposit saved (default 0), because the app has no other deposit records.
 - Progress rings show saved amount as a share of the target.
 - The profile screen uses `dummyjson.com/users/1` as the logged-in user's data.
 - The greeting is hardcoded "Good Morning, John Doe" per the brief.

@@ -5,6 +5,7 @@ import '../utils/formatters.dart';
 import '../utils/plan_progress.dart';
 import 'progress_ring.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/messages.dart';
 
 class SavingsPlanTile extends StatelessWidget {
   const SavingsPlanTile({super.key, required this.plan, this.onTap});
@@ -51,7 +52,9 @@ class SavingsPlanTile extends StatelessWidget {
                     Text(plan.name, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 2),
                     Text(
-                      l10n.planTileSubtitle(plan.productType),
+                      l10n.planTileSubtitle(
+                        l10n.planProductTypeText(plan.productType),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -68,7 +71,9 @@ class SavingsPlanTile extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                   Text(
-                    l10n.planTilePerMonth(formatNaira(plan.monthlyContribution)),
+                    l10n.planTilePerMonth(
+                      formatNaira(plan.monthlyContribution),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),

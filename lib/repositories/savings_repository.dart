@@ -14,8 +14,6 @@ class SavingsRepository {
       name: 'Target Savings',
       interestRate: 12,
       durationMonths: 12,
-      description:
-          'Save towards a specific goal with fixed monthly contributions.',
       minDeposit: 5000,
     ),
     SavingsProduct(
@@ -23,7 +21,6 @@ class SavingsRepository {
       name: 'Fixed Deposit',
       interestRate: 18,
       durationMonths: 6,
-      description: 'Lock funds for six months at a higher rate.',
       minDeposit: 50000,
     ),
     SavingsProduct(
@@ -31,8 +28,6 @@ class SavingsRepository {
       name: 'Education Savings',
       interestRate: 10,
       durationMonths: null,
-      description:
-          'Build a fund for school fees, with withdrawals when you need them.',
       minDeposit: 5000,
     ),
     SavingsProduct(
@@ -40,7 +35,6 @@ class SavingsRepository {
       name: 'Vacation Savings',
       interestRate: 8,
       durationMonths: null,
-      description: 'Plan your next trip with flexible withdrawals.',
       minDeposit: 2000,
     ),
   ];

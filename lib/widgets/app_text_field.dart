@@ -18,6 +18,7 @@ class AppTextField extends StatelessWidget {
     this.inputFormatters,
     this.onChanged,
     this.readOnly = false,
+    this.dimmed = false,
   });
 
   final TextEditingController controller;
@@ -34,6 +35,9 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final bool readOnly;
 
+  /// Shows a derived value: text in the theme's disabled colour.
+  final bool dimmed;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -48,6 +52,7 @@ class AppTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       readOnly: readOnly,
+      style: dimmed ? TextStyle(color: Theme.of(context).disabledColor) : null,
       decoration: InputDecoration(labelText: label, suffixIcon: suffixIcon),
     );
   }

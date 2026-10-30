@@ -1,15 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/utils/validators.dart';
+import 'package:savings_app/utils/validation_message.dart';
 
 void main() {
   group('Validators.email', () {
     test('rejects empty', () {
-      expect(Validators.email(''), 'Email is required');
-      expect(Validators.email(null), 'Email is required');
+      expect(Validators.email(''), ValidationMessage.emailRequired);
+      expect(Validators.email(null), ValidationMessage.emailRequired);
     });
 
     test('rejects bad format', () {
-      expect(Validators.email('bad'), 'Enter a valid email address');
+      expect(Validators.email('bad'), ValidationMessage.invalidEmail);
     });
 
     test('accepts valid email with surrounding spaces', () {
@@ -19,11 +20,14 @@ void main() {
 
   group('Validators.password', () {
     test('requires a value', () {
-      expect(Validators.password(''), 'Password is required');
+      expect(Validators.password(''), ValidationMessage.passwordRequired);
     });
 
     test('needs 8 characters', () {
-      expect(Validators.password('Pass123'), 'Password must be at least 8 characters');
+      expect(
+        Validators.password('Pass123'),
+        ValidationMessage.passwordTooShort,
+      );
     });
 
     test('accepts 8 characters', () {
@@ -33,45 +37,58 @@ void main() {
 
   group('Validators.requiredField', () {
     test('rejects whitespace only', () {
-      expect(Validators.requiredField('   ', 'Name'), 'Name is required');
+      expect(Validators.requiredField('   '), ValidationMessage.required);
     });
   });
 
   group('Validators.positiveNumber', () {
     test('accepts commas', () {
-      expect(Validators.positiveNumber('1,000,000', 'Amount'), isNull); // Review Focus 2
+      expect(
+        Validators.positiveNumber('1,000,000'),
+        isNull,
+      ); // Review Focus 2
     });
 
     test('rejects zero and non-numeric', () {
-      expect(Validators.positiveNumber('0', 'Amount'), 'Amount must be a positive number');
-      expect(Validators.positiveNumber('abc', 'Amount'), 'Amount must be a positive number');
+      expect(
+        Validators.positiveNumber('0'),
+        ValidationMessage.notPositive,
+      );
+      expect(
+        Validators.positiveNumber('abc'),
+        ValidationMessage.notPositive,
+      );
     });
 
     test('requires a value', () {
-      expect(Validators.positiveNumber('', 'Amount'), 'Amount is required');
+      expect(Validators.positiveNumber(''), ValidationMessage.required);
     });
   });
 
   group('Validators finite and whole numbers', () {
     test('amounts reject Infinity and NaN', () {
-      expect(Validators.positiveNumber('Infinity', 'Amount'),
-          'Amount must be a positive number');
-      expect(Validators.positiveNumber('NaN', 'Amount'),
-          'Amount must be a positive number');
+      expect(
+        Validators.positiveNumber('Infinity'),
+        ValidationMessage.notPositive,
+      );
+      expect(
+        Validators.positiveNumber('NaN'),
+        ValidationMessage.notPositive,
+      );
     });
 
     test('duration rejects fractions, zero, Infinity and NaN', () {
-      const msg = 'Duration must be a whole number of at least 1';
-      expect(Validators.positiveWholeNumber('0.4', 'Duration'), msg);
-      expect(Validators.positiveWholeNumber('1.5', 'Duration'), msg);
-      expect(Validators.positiveWholeNumber('0', 'Duration'), msg);
-      expect(Validators.positiveWholeNumber('Infinity', 'Duration'), msg);
-      expect(Validators.positiveWholeNumber('NaN', 'Duration'), msg);
+      const msg = ValidationMessage.notWholeNumber;
+      expect(Validators.positiveWholeNumber('0.4'), msg);
+      expect(Validators.positiveWholeNumber('1.5'), msg);
+      expect(Validators.positiveWholeNumber('0'), msg);
+      expect(Validators.positiveWholeNumber('Infinity'), msg);
+      expect(Validators.positiveWholeNumber('NaN'), msg);
     });
 
     test('duration accepts whole numbers', () {
-      expect(Validators.positiveWholeNumber('12', 'Duration'), isNull);
-      expect(Validators.positiveWholeNumber('12.0', 'Duration'), isNull);
+      expect(Validators.positiveWholeNumber('12'), isNull);
+      expect(Validators.positiveWholeNumber('12.0'), isNull);
     });
   });
 }

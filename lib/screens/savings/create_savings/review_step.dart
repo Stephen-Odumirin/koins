@@ -7,6 +7,7 @@ import '../../../providers/savings_provider.dart';
 import '../../../utils/formatters.dart';
 import 'create_draft.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../l10n/messages.dart';
 
 class ReviewStep extends ConsumerStatefulWidget {
   const ReviewStep({super.key});
@@ -79,7 +80,10 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
             child: Column(
               children: [
                 row(l10n.reviewName, d.name.trim()),
-                row(l10n.reviewProduct, d.product?.name ?? ''),
+                row(
+                  l10n.reviewProduct,
+                  d.product == null ? '' : l10n.productName(d.product!),
+                ),
                 if (s != null) ...[
                   row(l10n.reviewTarget, formatNaira(s.$1)),
                   row(l10n.reviewMonthly, formatNaira(s.$2)),

@@ -90,18 +90,88 @@ void main() {
     expect(_nextEnabled(tester), isFalse);
   });
 
-  testWidgets('Adjust unlocks the computed field', (tester) async {
+  testWidgets('the amounts step has no Adjust control', (tester) async {
     _tall(tester);
     await pumpWithOverrides(
       tester,
       CreateSavingsScreen(initialProduct: flexible),
     );
     await toAmounts(tester);
-    expect(tester.widget<EditableText>(_tf('tally-monthly')).readOnly, isTrue);
-    await tester.tap(find.byKey(const Key('tally-adjust')));
+    expect(find.textContaining('Adjust'), findsNothing);
+    expect(find.byKey(const Key('tally-adjust')), findsNothing);
+    for (final k in ['tally-target', 'tally-monthly', 'tally-months']) {
+      expect(tester.widget<EditableText>(_tf(k)).readOnly, isFalse);
+    }
+  });
+
+  testWidgets('monthly is typeable after target and months, and recomputes '
+      'the target', (tester) async {
+    _tall(tester);
+    await pumpWithOverrides(
+      tester,
+      CreateSavingsScreen(initialProduct: flexible),
+    );
+    await toAmounts(tester);
+    await tester.enterText(_tf('tally-target'), '120000');
+    await tester.enterText(_tf('tally-months'), '12');
     await tester.pump();
-    expect(tester.widget<EditableText>(_tf('tally-monthly')).readOnly, isFalse);
-    expect(tester.widget<EditableText>(_tf('tally-target')).readOnly, isTrue);
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(_tf('tally-monthly')).controller.text,
+      '₦10,000',
+    );
+
+    await tester.enterText(_tf('tally-monthly'), '20000');
+    await tester.pump();
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(_tf('tally-monthly')).controller.text,
+      '₦20,000',
+    );
+    expect(
+      tester.widget<EditableText>(_tf('tally-target')).controller.text,
+      '₦240,000',
+    );
+    expect(_nextEnabled(tester), isTrue);
+  });
+
+  testWidgets('target then monthly computes the months', (tester) async {
+    _tall(tester);
+    await pumpWithOverrides(
+      tester,
+      CreateSavingsScreen(initialProduct: flexible),
+    );
+    await toAmounts(tester);
+    await tester.enterText(_tf('tally-target'), '120000');
+    await tester.enterText(_tf('tally-monthly'), '10000');
+    await tester.pump();
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(_tf('tally-months')).controller.text,
+      '12',
+    );
+    expect(_nextEnabled(tester), isTrue);
+  });
+
+  testWidgets('amount fields format as naira while typing', (tester) async {
+    _tall(tester);
+    await pumpWithOverrides(
+      tester,
+      CreateSavingsScreen(initialProduct: flexible),
+    );
+    await toAmounts(tester);
+    await tester.enterText(_tf('tally-target'), '120000');
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(_tf('tally-target')).controller.text,
+      '₦120,000',
+    );
+    await tester.enterText(_tf('tally-opening'), '5000');
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(_tf('tally-opening')).controller.text,
+      '₦5,000',
+    );
   });
 
   testWidgets('monthly below the product minimum blocks next', (tester) async {
@@ -111,26 +181,30 @@ void main() {
       CreateSavingsScreen(initialProduct: flexible),
     );
     await toAmounts(tester);
-    await tester.tap(find.byKey(const Key('tally-adjust')));
-    await tester.pump();
-    await tester.enterText(_tf('tally-monthly'), '1000');
+    await tester.enterText(_tf('tally-target'), '12000'); // 1,000 a month
     await tester.enterText(_tf('tally-months'), '12');
     await tester.pump();
     expect(_nextEnabled(tester), isFalse);
   });
 
-  testWidgets('a fixed-term product locks the months', (tester) async {
+  testWidgets('a fixed-term product prefills editable months', (tester) async {
     _tall(tester);
     await pumpWithOverrides(
       tester,
       CreateSavingsScreen(initialProduct: SavingsRepository.products[0]),
     );
     await toAmounts(tester);
-    expect(tester.widget<EditableText>(_tf('tally-months')).readOnly, isTrue);
+    expect(tester.widget<EditableText>(_tf('tally-months')).readOnly, isFalse);
     await tester.enterText(_tf('tally-target'), '120000');
     await tester.pump();
     expect(
       find.text("I'll save ₦10,000 every month for 12 months."),
+      findsOneWidget,
+    );
+    await tester.enterText(_tf('tally-months'), '6');
+    await tester.pump();
+    expect(
+      find.text("I'll save ₦20,000 every month for 6 months."),
       findsOneWidget,
     );
   });
@@ -183,6 +257,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Savings Created Successfully'), findsOneWidget);
+    expect(find.text('Holiday'), findsOneWidget);
+    expect(find.text('₦120,000'), findsOneWidget);
+    expect(find.text('₦10,000'), findsOneWidget);
+    expect(find.text('Back to home'), findsOneWidget);
+    expect(find.byKey(const Key('create-done')), findsOneWidget);
     final saved = (await tester.runAsync(planDb.loadPlans))!;
     expect(saved.length, 4);
     expect(saved.last.name, 'Holiday');

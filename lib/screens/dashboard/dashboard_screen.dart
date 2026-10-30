@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../providers/savings_provider.dart';
 import '../../providers/savings_totals_provider.dart';
@@ -14,8 +15,6 @@ import '../../widgets/staggered_reveal.dart';
 import '../savings/all_plans_screen.dart';
 import '../savings/saved_plan_details_screen.dart';
 import '../../l10n/app_localizations.dart';
-
-const _recentCount = 3;
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -43,22 +42,50 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 StaggeredReveal(
                   index: 0,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.dashboardGreeting(AppConstants.greetingName),
-                          style: theme.textTheme.headlineSmall,
-                        ),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.md),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.dashboardGreeting(
+                                    AppConstants.greetingName,
+                                  ),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.heading,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  l10n.dashboardSubtitle,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.body,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            key: const Key('dashboard-profile'),
+                            tooltip: l10n.dashboardProfileTooltip,
+                            icon: const Icon(Icons.account_circle_outlined),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed('/profile'),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        key: const Key('dashboard-profile'),
-                        tooltip: l10n.dashboardProfileTooltip,
-                        icon: const Icon(Icons.account_circle_outlined),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/profile'),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -100,7 +127,7 @@ class DashboardScreen extends ConsumerWidget {
                         style: theme.textTheme.titleMedium,
                       ),
                     ),
-                    if (sorted.length > _recentCount)
+                    if (sorted.isNotEmpty)
                       TextButton(
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -139,7 +166,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       );
                     }
-                    final recent = sorted.take(_recentCount).toList();
+                    final recent = sorted.take(3).toList();
                     return Column(
                       children: [
                         for (var i = 0; i < recent.length; i++)

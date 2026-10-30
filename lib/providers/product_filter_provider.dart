@@ -10,9 +10,9 @@ class ProductFilter {
   final bool flexibleOnly;
 
   ProductFilter copyWith({String? query, bool? flexibleOnly}) => ProductFilter(
-        query: query ?? this.query,
-        flexibleOnly: flexibleOnly ?? this.flexibleOnly,
-      );
+    query: query ?? this.query,
+    flexibleOnly: flexibleOnly ?? this.flexibleOnly,
+  );
 }
 
 class ProductFilterNotifier extends Notifier<ProductFilter> {
@@ -27,18 +27,16 @@ class ProductFilterNotifier extends Notifier<ProductFilter> {
 
 final productFilterProvider =
     NotifierProvider<ProductFilterNotifier, ProductFilter>(
-  ProductFilterNotifier.new,
-);
+      ProductFilterNotifier.new,
+    );
 
-/// Products matching the search text and the flexible-only switch.
+/// Products matching the flexible-only switch. The search text is matched
+/// against the localized name in the products screen.
 final filteredProductsProvider = Provider<List<SavingsProduct>>((ref) {
   final all = ref.watch(productsProvider).value ?? const <SavingsProduct>[];
   final filter = ref.watch(productFilterProvider);
-  final q = filter.query.trim().toLowerCase();
 
-  return all.where((p) {
-    final matchesQuery = q.isEmpty || p.name.toLowerCase().contains(q);
-    final matchesFlexible = !filter.flexibleOnly || p.durationMonths == null;
-    return matchesQuery && matchesFlexible;
-  }).toList();
+  return all
+      .where((p) => !filter.flexibleOnly || p.durationMonths == null)
+      .toList();
 });

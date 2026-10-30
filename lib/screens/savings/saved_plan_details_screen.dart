@@ -6,6 +6,7 @@ import '../../utils/formatters.dart';
 import '../../utils/plan_progress.dart';
 import '../../widgets/progress_ring.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/messages.dart';
 
 /// One saved plan: its facts and how much of the target is saved.
 class SavedPlanDetailsScreen extends StatelessWidget {
@@ -47,7 +48,10 @@ class SavedPlanDetailsScreen extends StatelessWidget {
                               l10n.percentValue((progress * 100).round()),
                               style: theme.textTheme.headlineSmall,
                             ),
-                            Text(l10n.planSavedLabel, style: theme.textTheme.bodySmall),
+                            Text(
+                              l10n.planSavedLabel,
+                              style: theme.textTheme.bodySmall,
+                            ),
                           ],
                         ),
                       ),
@@ -67,7 +71,10 @@ class SavedPlanDetailsScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _Row(l10n.planProductType, plan.productType),
+                      _Row(
+                        l10n.planProductType,
+                        l10n.planProductTypeText(plan.productType),
+                      ),
                       _Row(l10n.planTarget, formatNaira(plan.targetAmount)),
                       _Row(l10n.planSavedSoFar, formatNaira(plan.savedAmount)),
                       _Row(

@@ -10,6 +10,7 @@ import '../../utils/validators.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/brand_mark.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/messages.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -52,7 +53,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _loading = true);
     try {
       await ref.read(authProvider.notifier).login(_email.text, _password.text);
-      ref.read(notificationsProvider.notifier).deliver(
+      ref
+          .read(notificationsProvider.notifier)
+          .deliver(
             AppNotification(
               id: DateTime.now().microsecondsSinceEpoch.toString(),
               title: l10n.welcomeNotificationTitle,
@@ -63,11 +66,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       final hasPin = await ref.read(pinStoreProvider).hasPin();
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(
-        hasPin ? '/dashboard' : '/pin-setup',
-      );
+      Navigator.of(
+        context,
+      ).pushReplacementNamed(hasPin ? '/dashboard' : '/pin-setup');
     } on AppException catch (e) {
-      _showMessage(e.message);
+      _showMessage(l10n.appExceptionText(e));
     } catch (_) {
       _showMessage(l10n.loginGenericError);
     } finally {
@@ -77,10 +80,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _showMessage(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _comingSoon() => _showMessage(AppLocalizations.of(context)!.loginComingSoon);
+  void _comingSoon() =>
+      _showMessage(AppLocalizations.of(context)!.loginComingSoon);
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +140,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         autofillHints: const [AutofillHints.email],
-                        validator: Validators.email,
+                        validator: (v) {
+                          final m = Validators.email(v);
+                          return m == null ? null : l10n.validationText(m);
+                        },
                         enabled: !_loading,
                       ),
                       const SizedBox(height: 16),
@@ -145,11 +154,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         obscureText: _obscure,
                         textInputAction: TextInputAction.done,
                         autofillHints: const [AutofillHints.password],
-                        validator: Validators.password,
+                        validator: (v) {
+                          final m = Validators.password(v);
+                          return m == null ? null : l10n.validationText(m);
+                        },
                         onFieldSubmitted: (_) => _submit(),
                         enabled: !_loading,
                         suffixIcon: IconButton(
-                          tooltip: _obscure ? l10n.loginShowPassword : l10n.loginHidePassword,
+                          tooltip: _obscure
+                              ? l10n.loginShowPassword
+                              : l10n.loginHidePassword,
                           icon: Icon(
                             _obscure
                                 ? Icons.visibility_outlined
@@ -166,7 +180,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Text(l10n.loginSubmit),
                       ),

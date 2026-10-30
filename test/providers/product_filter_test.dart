@@ -24,15 +24,6 @@ Future<ProviderContainer> _container() async {
 }
 
 void main() {
-  test('search matches product name case-insensitively', () async {
-    final container = await _container();
-
-    container.read(productFilterProvider.notifier).setQuery('FIXED');
-
-    final results = container.read(filteredProductsProvider);
-    expect(results.map((p) => p.name), ['Fixed Deposit']);
-  });
-
   test('flexible-only keeps products with no fixed duration', () async {
     final container = await _container();
 

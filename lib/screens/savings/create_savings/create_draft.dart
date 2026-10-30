@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../models/savings_product.dart';
+import '../../../utils/rule_error.dart';
 import '../../../utils/savings_tally.dart';
 
 enum CreateStep { name, product, amounts, review, success }
 
-/// What the user has entered so far. The user edits months and one of target
-/// or monthly; [computed] names which of those two is derived.
+/// What the user has entered so far. The two most recently edited amounts
+/// ([edits], most recent last) are the inputs; the third is computed.
 class SavingsDraft {
   const SavingsDraft({
     this.step = CreateStep.name,
@@ -16,7 +17,7 @@ class SavingsDraft {
     this.inputMonthly,
     this.inputMonths,
     this.opening = 0,
-    this.computed = TallyField.monthly,
+    this.edits = const [],
   });
 
   final CreateStep step;
@@ -26,24 +27,26 @@ class SavingsDraft {
   final int? inputMonthly;
   final int? inputMonths;
   final int opening;
-  final TallyField computed;
+  final List<TallyField> edits;
 
-  int? get months => product?.durationMonths ?? inputMonths;
-  bool get monthsLocked => product?.durationMonths != null;
+  int? get months => inputMonths;
 
-  TallyField get _edited =>
-      computed == TallyField.monthly ? TallyField.target : TallyField.monthly;
-
-  SavingsTally get _input => SavingsTally(
-    target: computed == TallyField.target ? null : inputTarget,
-    monthly: computed == TallyField.monthly ? null : inputMonthly,
-    months: months,
+  TallyResolution get resolution => SavingsTally.resolve(
+    target: inputTarget,
+    monthly: inputMonthly,
+    months: inputMonths,
+    edits: edits,
   );
 
-  /// The resolved target, monthly and months, or null while unresolved.
-  (int, int, int)? get solved => _input.solve(_edited);
+  TallyField get computed => resolution.computed;
 
-  String? get solveError => _input.solveError(_edited);
+  /// The resolved target, monthly and months, or null while unresolved.
+  (int, int, int)? get solved {
+    final r = resolution;
+    return r.complete ? (r.target!, r.monthly!, r.months!) : null;
+  }
+
+  RuleError? get solveError => resolution.error;
 
   SavingsTally get tally {
     final s = solved;
@@ -52,23 +55,17 @@ class SavingsDraft {
         : SavingsTally(target: s.$1, monthly: s.$2, months: s.$3);
   }
 
-  String? get openingError {
+  RuleError? get openingError {
     final s = solved;
-    if (s != null && opening > s.$1) {
-      return 'Opening deposit cannot exceed the target.';
-    }
+    if (s != null && opening > s.$1) return RuleError.openingExceedsTarget;
     return null;
   }
 
   /// Why the amounts cannot be accepted, or null when they can. Missing
   /// input returns a non-null placeholder with no message shown.
-  String? get amountsError {
-    if (solved == null) return solveError ?? 'incomplete';
-    return tally.validate(
-          product?.minDeposit ?? 0,
-          fixedMonths: product?.durationMonths,
-        ) ??
-        openingError;
+  RuleError? get amountsError {
+    if (solved == null) return solveError ?? RuleError.incomplete;
+    return tally.validate(product?.minDeposit ?? 0) ?? openingError;
   }
 
   bool get nameValid => name.trim().isNotEmpty && name.trim().length <= 40;
@@ -88,7 +85,7 @@ class SavingsDraft {
     Object? inputMonthly = _keep,
     Object? inputMonths = _keep,
     int? opening,
-    TallyField? computed,
+    List<TallyField>? edits,
   }) => SavingsDraft(
     step: step ?? this.step,
     name: name ?? this.name,
@@ -103,7 +100,7 @@ class SavingsDraft {
         ? this.inputMonths
         : inputMonths as int?,
     opening: opening ?? this.opening,
-    computed: computed ?? this.computed,
+    edits: edits ?? this.edits,
   );
 
   static const _keep = Object();
@@ -114,28 +111,33 @@ class CreateDraftNotifier extends Notifier<SavingsDraft> {
   final SavingsProduct? _initialProduct;
 
   @override
-  SavingsDraft build() => SavingsDraft(product: _initialProduct);
+  SavingsDraft build() => SavingsDraft(
+    product: _initialProduct,
+    // The product's term is only the default; months stays editable.
+    inputMonths: _initialProduct?.durationMonths,
+  );
 
   void setName(String v) => state = state.copyWith(name: v);
-  void setProduct(SavingsProduct p) => state = state.copyWith(product: p);
-  void setTarget(int? v) => state = state.copyWith(inputTarget: v);
-  void setMonthly(int? v) => state = state.copyWith(inputMonthly: v);
-  void setMonths(int? v) => state = state.copyWith(inputMonths: v);
-  void setOpening(int v) => state = state.copyWith(opening: v);
+  void setProduct(SavingsProduct p) => state = state.copyWith(
+    product: p,
+    inputMonths: state.edits.contains(TallyField.months)
+        ? state.inputMonths
+        : p.durationMonths,
+  );
+  List<TallyField> _edited(TallyField f) => [
+    ...state.edits.where((e) => e != f),
+    f,
+  ];
 
-  /// Unlocks the computed field and computes the other one instead.
-  void adjust() {
-    final s = state;
-    final solved = s.solved;
-    final next = s.computed == TallyField.monthly
-        ? TallyField.target
-        : TallyField.monthly;
-    state = s.copyWith(
-      computed: next,
-      inputTarget: solved?.$1 ?? s.inputTarget,
-      inputMonthly: solved?.$2 ?? s.inputMonthly,
-    );
-  }
+  void setTarget(int? v) =>
+      state = state.copyWith(inputTarget: v, edits: _edited(TallyField.target));
+  void setMonthly(int? v) => state = state.copyWith(
+    inputMonthly: v,
+    edits: _edited(TallyField.monthly),
+  );
+  void setMonths(int? v) =>
+      state = state.copyWith(inputMonths: v, edits: _edited(TallyField.months));
+  void setOpening(int v) => state = state.copyWith(opening: v);
 
   void goTo(CreateStep step) => state = state.copyWith(step: step);
 

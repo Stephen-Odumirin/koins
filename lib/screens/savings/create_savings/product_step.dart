@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../models/savings_product.dart';
 import '../../../providers/savings_provider.dart';
 import '../../../utils/formatters.dart';
 import 'create_draft.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../l10n/messages.dart';
 
 class ProductStep extends ConsumerWidget {
   const ProductStep({super.key});
@@ -33,7 +35,7 @@ class ProductStep extends ConsumerWidget {
               side: BorderSide(
                 color: p == selected
                     ? theme.colorScheme.primary
-                    : theme.colorScheme.outlineVariant,
+                    : AppColors.outline,
                 width: p == selected ? 2 : 1,
               ),
             ),
@@ -45,12 +47,17 @@ class ProductStep extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(p.name, style: theme.textTheme.titleMedium),
+                    Text(
+                      l10n.productName(p),
+                      style: theme.textTheme.titleMedium,
+                    ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.productStepSummary(
                         p.interestRate.toStringAsFixed(0),
-                        p.durationLabel,
+                        AppLocalizations.of(
+                          context,
+                        )!.durationText(p.durationMonths),
                         formatNaira(p.minDeposit),
                       ),
                       style: theme.textTheme.bodyMedium,

@@ -82,6 +82,9 @@ class AppTheme {
           side: const BorderSide(color: AppColors.outline),
         ),
       ),
+      // Size.fromHeight gives buttons infinite minimum width. A button in a
+      // Row or another unbounded-width parent must be wrapped in Expanded or
+      // given an explicit width, or layout throws.
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(AppSpacing.keyMinSize),

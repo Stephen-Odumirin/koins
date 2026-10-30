@@ -29,7 +29,13 @@ void main() {
 
     await expectLater(
       api.fetchUser(1),
-      throwsA(isA<AppException>().having((e) => e.message, 'message', contains('500'))),
+      throwsA(
+        isA<AppException>().having(
+          (e) => (e.code, e.statusCode),
+          'code and status',
+          (AppExceptionCode.serverError, 500),
+        ),
+      ),
     );
   });
 
@@ -38,7 +44,10 @@ void main() {
       client: MockClient((_) async => http.Response('nope', 200)),
     );
 
-    await expectLater(api.fetchUser(1), throwsA(isA<AppException>())); // Review Focus 5
+    await expectLater(
+      api.fetchUser(1),
+      throwsA(isA<AppException>()),
+    ); // Review Focus 5
   });
 
   test('no connection throws AppException', () async {
@@ -48,7 +57,13 @@ void main() {
 
     await expectLater(
       api.fetchUser(1),
-      throwsA(isA<AppException>().having((e) => e.message, 'message', 'No internet connection')),
+      throwsA(
+        isA<AppException>().having(
+          (e) => e.code,
+          'code',
+          AppExceptionCode.noInternet,
+        ),
+      ),
     );
   });
 
@@ -58,6 +73,9 @@ void main() {
       timeout: const Duration(milliseconds: 10),
     );
 
-    await expectLater(api.fetchUser(1), throwsA(isA<AppException>())); // Review Focus 5
+    await expectLater(
+      api.fetchUser(1),
+      throwsA(isA<AppException>()),
+    ); // Review Focus 5
   });
 }

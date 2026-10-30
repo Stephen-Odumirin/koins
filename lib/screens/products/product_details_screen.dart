@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/staggered_reveal.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/messages.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({super.key, required this.product});
@@ -33,7 +34,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   child: Material(
                     color: Colors.transparent,
                     child: Text(
-                      product.name,
+                      AppLocalizations.of(context)!.productName(product),
                       style: theme.textTheme.headlineSmall,
                     ),
                   ),
@@ -43,7 +44,7 @@ class ProductDetailsScreen extends StatelessWidget {
               StaggeredReveal(
                 index: 1,
                 child: Text(
-                  product.description,
+                  AppLocalizations.of(context)!.productDescription(product),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -68,7 +69,9 @@ class ProductDetailsScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       _Stat(
                         label: l10n.statDuration,
-                        value: product.durationLabel,
+                        value: AppLocalizations.of(
+                          context,
+                        )!.durationText(product.durationMonths),
                       ),
                     ],
                   ),

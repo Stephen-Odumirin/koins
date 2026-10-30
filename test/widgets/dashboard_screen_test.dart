@@ -127,8 +127,10 @@ void main() {
       ProviderScope(
         overrides: [_plansOverride(() => never.future)],
         child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: DashboardScreen(),
+        ),
       ),
     );
     await tester.pump();
@@ -152,8 +154,10 @@ void main() {
           }),
         ],
         child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: DashboardScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -175,8 +179,10 @@ void main() {
       ProviderScope(
         overrides: [_plansOverride(() async => <SavingsPlan>[])],
         child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: DashboardScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -191,8 +197,10 @@ void main() {
       ProviderScope(
         overrides: [_plansOverride(() async => <SavingsPlan>[])],
         child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,home: AllPlansScreen()),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AllPlansScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -212,7 +220,7 @@ void main() {
     expect(find.text('New Laptop'), findsOneWidget);
     expect(find.text('Create savings'), findsOneWidget);
     expect(find.text('View products'), findsOneWidget);
-    expect(find.text('See all'), findsNothing);
+    expect(find.text('See all'), findsOneWidget);
   });
 
   testWidgets('a created plan raises the total and shows first', (
@@ -224,15 +232,14 @@ void main() {
 
     expect(find.text('₦870,000'), findsOneWidget);
     expect(find.text('Holiday'), findsOneWidget);
-    // Newest first: Holiday sits above New Laptop; the oldest drops off.
+    // Newest first: Holiday sits above New Laptop.
     expect(
       tester.getTopLeft(find.text('Holiday')).dy,
       lessThan(tester.getTopLeft(find.text('New Laptop')).dy),
     );
-    expect(find.text('Emergency Fund'), findsNothing);
   });
 
-  testWidgets('See all appears with four plans and opens all four', (
+  testWidgets('with four plans three show, newest first, with See all', (
     tester,
   ) async {
     _tall(tester);
@@ -240,16 +247,16 @@ void main() {
     await _addHoliday(tester);
 
     expect(find.text('See all'), findsOneWidget);
-    await tester.tap(find.text('See all'));
-    await tester.pumpAndSettle();
-
-    for (final name in [
-      'Holiday',
-      'New Laptop',
-      'School Fees 2027',
-      'Emergency Fund',
-    ]) {
-      expect(find.text(name), findsOneWidget);
+    expect(find.text('Emergency Fund'), findsNothing);
+    final names = ['Holiday', 'New Laptop', 'School Fees 2027'];
+    for (final n in names) {
+      expect(find.text(n), findsOneWidget);
+    }
+    for (var i = 0; i < names.length - 1; i++) {
+      expect(
+        tester.getTopLeft(find.text(names[i])).dy,
+        lessThan(tester.getTopLeft(find.text(names[i + 1])).dy),
+      );
     }
   });
 

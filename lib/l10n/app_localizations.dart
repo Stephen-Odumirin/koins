@@ -382,6 +382,12 @@ abstract class AppLocalizations {
   /// **'Could not check your PIN. Please try again.'**
   String get lockCheckError;
 
+  /// No description provided for @dashboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s your savings overview'**
+  String get dashboardSubtitle;
+
   /// No description provided for @dashboardGreeting.
   ///
   /// In en, this message translates to:
@@ -562,11 +568,23 @@ abstract class AppLocalizations {
   /// **'{amount} / mo'**
   String planTilePerMonth(String amount);
 
-  /// No description provided for @createBackToDashboard.
+  /// No description provided for @createBackToHome.
   ///
   /// In en, this message translates to:
-  /// **'Back to dashboard'**
-  String get createBackToDashboard;
+  /// **'Back to home'**
+  String get createBackToHome;
+
+  /// No description provided for @successDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get successDuration;
+
+  /// No description provided for @successMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String successMonths(int count);
 
   /// No description provided for @createSuccess.
   ///
@@ -694,12 +712,6 @@ abstract class AppLocalizations {
   /// **'Opening deposit (optional)'**
   String get amountsOpeningLabel;
 
-  /// No description provided for @amountsAdjust.
-  ///
-  /// In en, this message translates to:
-  /// **'Adjust'**
-  String get amountsAdjust;
-
   /// No description provided for @amountsSummary.
   ///
   /// In en, this message translates to:
@@ -747,6 +759,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No notifications yet'**
   String get notificationsEmpty;
+
+  /// No description provided for @validationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} is required'**
+  String validationRequired(String label);
+
+  /// No description provided for @validationEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get validationEmailRequired;
+
+  /// No description provided for @validationInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get validationInvalidEmail;
+
+  /// No description provided for @validationPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get validationPasswordRequired;
+
+  /// No description provided for @validationPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get validationPasswordTooShort;
+
+  /// No description provided for @validationNotPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} must be a positive number'**
+  String validationNotPositive(String label);
+
+  /// No description provided for @validationNotWholeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} must be a whole number of at least 1'**
+  String validationNotWholeNumber(String label);
+
+  /// No description provided for @ruleIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the amounts.'**
+  String get ruleIncomplete;
+
+  /// No description provided for @ruleTargetNotPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Target must be more than zero.'**
+  String get ruleTargetNotPositive;
+
+  /// No description provided for @ruleMonthsRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Months must be a whole number from 1 to {max}.'**
+  String ruleMonthsRange(int max);
+
+  /// No description provided for @ruleWrongTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'This product runs for {months} months.'**
+  String ruleWrongTerm(int months);
+
+  /// No description provided for @ruleBelowMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly amount is below the minimum.'**
+  String get ruleBelowMinimum;
+
+  /// No description provided for @ruleNotMultipleOfMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Target must be a multiple of the months.'**
+  String get ruleNotMultipleOfMonths;
+
+  /// No description provided for @ruleNotMultipleOfMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Target must be a multiple of the monthly amount.'**
+  String get ruleNotMultipleOfMonthly;
+
+  /// No description provided for @ruleOpeningExceedsTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening deposit cannot exceed the target.'**
+  String get ruleOpeningExceedsTarget;
+
+  /// No description provided for @errorInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password'**
+  String get errorInvalidCredentials;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error ({status})'**
+  String errorServer(int status);
+
+  /// No description provided for @errorNoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get errorNoInternet;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please try again.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorBadResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected response from server'**
+  String get errorBadResponse;
+
+  /// No description provided for @durationMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{months} Months'**
+  String durationMonths(int months);
+
+  /// No description provided for @durationFlexible.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexible'**
+  String get durationFlexible;
+
+  /// No description provided for @productTargetSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Savings'**
+  String get productTargetSavings;
+
+  /// No description provided for @productTargetSavingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save towards a specific goal with fixed monthly contributions.'**
+  String get productTargetSavingsDescription;
+
+  /// No description provided for @productFixedDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed Deposit'**
+  String get productFixedDeposit;
+
+  /// No description provided for @productFixedDepositDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock funds for six months at a higher rate.'**
+  String get productFixedDepositDescription;
+
+  /// No description provided for @productEducationSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Education Savings'**
+  String get productEducationSavings;
+
+  /// No description provided for @productEducationSavingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a fund for school fees, with withdrawals when you need them.'**
+  String get productEducationSavingsDescription;
+
+  /// No description provided for @productVacationSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacation Savings'**
+  String get productVacationSavings;
+
+  /// No description provided for @productVacationSavingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan your next trip with flexible withdrawals.'**
+  String get productVacationSavingsDescription;
 }
 
 class _AppLocalizationsDelegate

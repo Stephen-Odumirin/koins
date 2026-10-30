@@ -169,6 +169,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockCheckError => 'Could not check your PIN. Please try again.';
 
   @override
+  String get dashboardSubtitle => 'Here\'s your savings overview';
+
+  @override
   String dashboardGreeting(String name) {
     return 'Good Morning, $name';
   }
@@ -269,7 +272,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get createBackToDashboard => 'Back to dashboard';
+  String get createBackToHome => 'Back to home';
+
+  @override
+  String get successDuration => 'Duration';
+
+  @override
+  String successMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get createSuccess => 'Savings Created Successfully';
@@ -338,9 +355,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amountsOpeningLabel => 'Opening deposit (optional)';
 
   @override
-  String get amountsAdjust => 'Adjust';
-
-  @override
   String amountsSummary(String monthly, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -371,4 +385,116 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsEmpty => 'No notifications yet';
+
+  @override
+  String validationRequired(String label) {
+    return '$label is required';
+  }
+
+  @override
+  String get validationEmailRequired => 'Email is required';
+
+  @override
+  String get validationInvalidEmail => 'Enter a valid email address';
+
+  @override
+  String get validationPasswordRequired => 'Password is required';
+
+  @override
+  String get validationPasswordTooShort =>
+      'Password must be at least 8 characters';
+
+  @override
+  String validationNotPositive(String label) {
+    return '$label must be a positive number';
+  }
+
+  @override
+  String validationNotWholeNumber(String label) {
+    return '$label must be a whole number of at least 1';
+  }
+
+  @override
+  String get ruleIncomplete => 'Complete the amounts.';
+
+  @override
+  String get ruleTargetNotPositive => 'Target must be more than zero.';
+
+  @override
+  String ruleMonthsRange(int max) {
+    return 'Months must be a whole number from 1 to $max.';
+  }
+
+  @override
+  String ruleWrongTerm(int months) {
+    return 'This product runs for $months months.';
+  }
+
+  @override
+  String get ruleBelowMinimum => 'Monthly amount is below the minimum.';
+
+  @override
+  String get ruleNotMultipleOfMonths =>
+      'Target must be a multiple of the months.';
+
+  @override
+  String get ruleNotMultipleOfMonthly =>
+      'Target must be a multiple of the monthly amount.';
+
+  @override
+  String get ruleOpeningExceedsTarget =>
+      'Opening deposit cannot exceed the target.';
+
+  @override
+  String get errorInvalidCredentials => 'Invalid email or password';
+
+  @override
+  String errorServer(int status) {
+    return 'Server error ($status)';
+  }
+
+  @override
+  String get errorNoInternet => 'No internet connection';
+
+  @override
+  String get errorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get errorBadResponse => 'Unexpected response from server';
+
+  @override
+  String durationMonths(int months) {
+    return '$months Months';
+  }
+
+  @override
+  String get durationFlexible => 'Flexible';
+
+  @override
+  String get productTargetSavings => 'Target Savings';
+
+  @override
+  String get productTargetSavingsDescription =>
+      'Save towards a specific goal with fixed monthly contributions.';
+
+  @override
+  String get productFixedDeposit => 'Fixed Deposit';
+
+  @override
+  String get productFixedDepositDescription =>
+      'Lock funds for six months at a higher rate.';
+
+  @override
+  String get productEducationSavings => 'Education Savings';
+
+  @override
+  String get productEducationSavingsDescription =>
+      'Build a fund for school fees, with withdrawals when you need them.';
+
+  @override
+  String get productVacationSavings => 'Vacation Savings';
+
+  @override
+  String get productVacationSavingsDescription =>
+      'Plan your next trip with flexible withdrawals.';
 }

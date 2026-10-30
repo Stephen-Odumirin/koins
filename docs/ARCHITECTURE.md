@@ -116,7 +116,7 @@ Every animation checks `MediaQuery.disableAnimationsOf` and skips the motion whe
 ## Trade-offs
 
 - **Mock auth.** Login checks hardcoded demo credentials. A real version needs a backend, token storage, and session expiry.
-- **Seeded savings.** There are no deposits, so saved amounts come from the three seeded plans (₦850,000 in total); new plans start at zero saved.
+- **Seeded savings.** There are no deposits, so saved amounts come from the three seeded plans (₦850,000 in total); a new plan starts with its opening deposit saved (default 0).
 - **Known gaps.** The release APK is signed with the debug key, the application id is `com.example.savings_app`, and the Naira sign uses a fallback font.
 - **Local products.** Products are seed data in the repository. A real app would fetch them and cache the result.
 - **Named routes.** Screens navigate by route name, and the create screen receives the selected product as a route argument. The success path returns to the first route in the stack, because the dashboard can be the home route.

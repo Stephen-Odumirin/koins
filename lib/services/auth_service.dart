@@ -6,8 +6,9 @@ class AuthService {
     // Simulated latency so the loading state is visible
     await Future<void>.delayed(const Duration(milliseconds: 800));
 
-    final ok = email.trim().toLowerCase() == AppConstants.mockEmail &&
+    final ok =
+        email.trim().toLowerCase() == AppConstants.mockEmail &&
         password == AppConstants.mockPassword;
-    if (!ok) throw const AppException('Invalid email or password');
+    if (!ok) throw const AppException(AppExceptionCode.invalidCredentials);
   }
 }

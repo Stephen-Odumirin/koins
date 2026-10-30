@@ -24,18 +24,21 @@ class UserApiService {
           .timeout(timeout);
 
       if (res.statusCode != 200) {
-        throw AppException('Server error (${res.statusCode})');
+        throw AppException(
+          AppExceptionCode.serverError,
+          statusCode: res.statusCode,
+        );
       }
       return UserProfile.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
     } on SocketException {
-      throw const AppException('No internet connection');
+      throw const AppException(AppExceptionCode.noInternet);
     } on TimeoutException {
-      throw const AppException('Request timed out. Please try again.');
+      throw const AppException(AppExceptionCode.timeout);
     } on FormatException {
-      throw const AppException('Unexpected response from server');
+      throw const AppException(AppExceptionCode.badResponse);
     } on TypeError {
       // Valid JSON with unexpected shape (e.g. a missing or non-string field)
-      throw const AppException('Unexpected response from server');
+      throw const AppException(AppExceptionCode.badResponse);
     }
   }
 }

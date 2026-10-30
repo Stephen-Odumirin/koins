@@ -41,7 +41,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       setState(() => _showBiometric = true);
       await _tryBiometric();
     } catch (_) {
-      // Biometrics are optional; the PIN field still works.
+      // Biometrics are optional; the PIN pad still works.
     }
   }
 

@@ -62,6 +62,7 @@
     }
   },
   "lockCheckError": "Could not check your PIN. Please try again.",
+  "dashboardSubtitle": "Here's your savings overview",
   "dashboardGreeting": "Good Morning, {name}",
   "@dashboardGreeting": {
     "placeholders": {
@@ -127,7 +128,16 @@
       }
     }
   },
-  "createBackToDashboard": "Back to dashboard",
+  "createBackToHome": "Back to home",
+  "successDuration": "Duration",
+  "successMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@successMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "createSuccess": "Savings Created Successfully",
   "createSaveError": "Could not save your savings. Please try again.",
   "createReviewTitle": "Review your plan",
@@ -162,7 +172,6 @@
   "amountsMonthsLockedLabel": "Months",
   "amountsMonthsLabel": "Months (1 to 60)",
   "amountsOpeningLabel": "Opening deposit (optional)",
-  "amountsAdjust": "Adjust",
   "amountsSummary": "I'll save {monthly} every month for {count, plural, =1{1 month} other{{count} months}}.",
   "@amountsSummary": {
     "placeholders": {
@@ -180,5 +189,84 @@
   "profilePhone": "Phone number",
   "profileLogout": "Logout",
   "notificationsTitle": "Notifications",
-  "notificationsEmpty": "No notifications yet"
+  "notificationsEmpty": "No notifications yet",
+  "validationRequired": "{label} is required",
+  "@validationRequired": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "validationEmailRequired": "Email is required",
+  "validationInvalidEmail": "Enter a valid email address",
+  "validationPasswordRequired": "Password is required",
+  "validationPasswordTooShort": "Password must be at least 8 characters",
+  "validationNotPositive": "{label} must be a positive number",
+  "@validationNotPositive": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "validationNotWholeNumber": "{label} must be a whole number of at least 1",
+  "@validationNotWholeNumber": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleIncomplete": "Complete the amounts.",
+  "ruleTargetNotPositive": "Target must be more than zero.",
+  "ruleMonthsRange": "Months must be a whole number from 1 to {max}.",
+  "@ruleMonthsRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "ruleWrongTerm": "This product runs for {months} months.",
+  "@ruleWrongTerm": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "ruleBelowMinimum": "Monthly amount is below the minimum.",
+  "ruleNotMultipleOfMonths": "Target must be a multiple of the months.",
+  "ruleNotMultipleOfMonthly": "Target must be a multiple of the monthly amount.",
+  "ruleOpeningExceedsTarget": "Opening deposit cannot exceed the target.",
+  "errorInvalidCredentials": "Invalid email or password",
+  "errorServer": "Server error ({status})",
+  "@errorServer": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "errorNoInternet": "No internet connection",
+  "errorTimeout": "Request timed out. Please try again.",
+  "errorBadResponse": "Unexpected response from server",
+  "durationMonths": "{months} Months",
+  "@durationMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "durationFlexible": "Flexible",
+  "productTargetSavings": "Target Savings",
+  "productTargetSavingsDescription": "Save towards a specific goal with fixed monthly contributions.",
+  "productFixedDeposit": "Fixed Deposit",
+  "productFixedDepositDescription": "Lock funds for six months at a higher rate.",
+  "productEducationSavings": "Education Savings",
+  "productEducationSavingsDescription": "Build a fund for school fees, with withdrawals when you need them.",
+  "productVacationSavings": "Vacation Savings",
+  "productVacationSavingsDescription": "Plan your next trip with flexible withdrawals."
 }
