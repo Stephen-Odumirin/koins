@@ -5,15 +5,37 @@ import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> _pumpLogin(WidgetTester tester) async {
+import '../helpers/in_memory_secret_store.dart';
+
+Future<void> _pumpLogin(
+  WidgetTester tester, {
+  bool hasPin = true,
+  Object? routeArgument,
+}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
+  final store = InMemorySecretStore();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      secretStoreProvider.overrideWithValue(store),
+    ],
+  );
+  addTearDown(container.dispose);
+  if (hasPin) await container.read(pinStoreProvider).savePin('1234');
   await tester.pumpWidget(
-    ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    UncontrolledProviderScope(
+      container: container,
       child: MaterialApp(
-        routes: {'/dashboard': (_) => const Scaffold(body: Text('DASHBOARD'))},
-        home: const LoginScreen(),
+        routes: {
+          '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
+          '/pin-setup': (_) => const Scaffold(body: Text('PIN SETUP')),
+        },
+        onGenerateRoute: (settings) => MaterialPageRoute<void>(
+          settings: RouteSettings(name: '/', arguments: routeArgument),
+          builder: (_) => const LoginScreen(),
+        ),
+        initialRoute: '/login',
       ),
     ),
   );
@@ -41,7 +63,7 @@ void main() {
     expect(find.text('Enter a valid email address'), findsOneWidget);
   });
 
-  testWidgets('demo credentials log in and open the dashboard', (tester) async {
+  testWidgets('demo credentials with a PIN open the dashboard', (tester) async {
     await _pumpLogin(tester);
 
     await tester.enterText(find.byKey(const Key('login-email')), 'test@bank.com');
@@ -75,5 +97,50 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Invalid email or password'), findsOneWidget);
+  });
+
+  testWidgets('demo credentials with no PIN open PIN setup', (tester) async {
+    await _pumpLogin(tester, hasPin: false);
+
+    await tester.enterText(find.byKey(const Key('login-email')), 'test@bank.com');
+    await tester.enterText(find.byKey(const Key('login-password')), 'Password123');
+    await tester.tap(find.byKey(const Key('login-submit')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('PIN SETUP'), findsOneWidget);
+    expect(find.text('DASHBOARD'), findsNothing);
+  });
+
+  testWidgets('a String route argument shows as a snackbar', (tester) async {
+    await _pumpLogin(
+      tester,
+      routeArgument: 'Too many attempts. Please log in again.',
+    );
+
+    expect(find.text('Too many attempts. Please log in again.'), findsOneWidget);
+  });
+
+  testWidgets('no route argument shows no snackbar', (tester) async {
+    await _pumpLogin(tester);
+
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('Forgot password and Create account still say Coming soon', (
+    tester,
+  ) async {
+    await _pumpLogin(tester);
+
+    await tester.tap(find.text('Forgot password?'));
+    await tester.pump();
+    expect(find.text('Coming soon'), findsOneWidget);
+
+    ScaffoldMessenger.of(tester.element(find.byType(Scaffold).first))
+        .clearSnackBars();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Create account'));
+    await tester.pump();
+    expect(find.text('Coming soon'), findsOneWidget);
   });
 }

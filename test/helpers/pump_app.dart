@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:savings_app/services/plan_database.dart';
 
+import 'in_memory_secret_store.dart';
 import 'memory_plan_db.dart';
 
 /// Pumps [child] inside a ProviderScope with SharedPreferences mocked.
@@ -25,6 +26,7 @@ Future<void> pumpWithOverrides(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         planDatabaseProvider.overrideWithValue(db),
+        secretStoreProvider.overrideWithValue(InMemorySecretStore()),
         ...overrides,
       ],
       child: MaterialApp(home: child),

@@ -51,4 +51,27 @@ void main() {
       expect(Validators.positiveNumber('', 'Amount'), 'Amount is required');
     });
   });
+
+  group('Validators finite and whole numbers', () {
+    test('amounts reject Infinity and NaN', () {
+      expect(Validators.positiveNumber('Infinity', 'Amount'),
+          'Amount must be a positive number');
+      expect(Validators.positiveNumber('NaN', 'Amount'),
+          'Amount must be a positive number');
+    });
+
+    test('duration rejects fractions, zero, Infinity and NaN', () {
+      const msg = 'Duration must be a whole number of at least 1';
+      expect(Validators.positiveWholeNumber('0.4', 'Duration'), msg);
+      expect(Validators.positiveWholeNumber('1.5', 'Duration'), msg);
+      expect(Validators.positiveWholeNumber('0', 'Duration'), msg);
+      expect(Validators.positiveWholeNumber('Infinity', 'Duration'), msg);
+      expect(Validators.positiveWholeNumber('NaN', 'Duration'), msg);
+    });
+
+    test('duration accepts whole numbers', () {
+      expect(Validators.positiveWholeNumber('12', 'Duration'), isNull);
+      expect(Validators.positiveWholeNumber('12.0', 'Duration'), isNull);
+    });
+  });
 }

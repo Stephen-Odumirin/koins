@@ -25,7 +25,23 @@ class Validators {
     final required = requiredField(value, label);
     if (required != null) return required;
     final parsed = num.tryParse(value!.trim().replaceAll(',', ''));
-    if (parsed == null || parsed <= 0) return '$label must be a positive number';
+    if (parsed == null || !parsed.isFinite || parsed <= 0) {
+      return '$label must be a positive number';
+    }
+    return null;
+  }
+
+  /// A whole number of at least 1, for counts such as months.
+  static String? positiveWholeNumber(String? value, String label) {
+    final required = requiredField(value, label);
+    if (required != null) return required;
+    final parsed = num.tryParse(value!.trim().replaceAll(',', ''));
+    if (parsed == null ||
+        !parsed.isFinite ||
+        parsed < 1 ||
+        parsed != parsed.truncate()) {
+      return '$label must be a whole number of at least 1';
+    }
     return null;
   }
 }

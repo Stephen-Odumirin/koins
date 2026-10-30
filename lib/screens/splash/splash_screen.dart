@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../providers/app_lock_provider.dart';
 import '../../providers/providers.dart';
 import '../../utils/startup_route.dart';
 import '../../widgets/brand_mark.dart';
@@ -68,7 +69,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _goNext();
   }
 
-  void _goNext() {
+  Future<void> _goNext() async {
     if (!mounted || _navigated) return;
     _navigated = true;
     final storage = ref.read(localStorageProvider);
@@ -81,7 +82,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       StartupDestination.login => '/login',
       StartupDestination.onboarding => '/onboarding',
     };
-    Navigator.of(context).pushReplacementNamed(route);
+    var target = route;
+    if (destination == StartupDestination.dashboard) {
+      // Fail closed: if the PIN check errors or hangs, go to login, which
+      // needs the password, rather than strand the user or skip the lock.
+      var hasPin = false;
+      try {
+        hasPin = await ref
+            .read(pinStoreProvider)
+            .hasPin()
+            .timeout(const Duration(seconds: 2));
+      } catch (_) {
+        if (!mounted) return;
+        Navigator.of(context).pushReplacementNamed('/login');
+        return;
+      }
+      if (!mounted) return;
+      if (hasPin) {
+        // The splash owns the cold-start lock: it replaces itself with the
+        // lock route, and unlocking continues to the dashboard.
+        ref.read(appLockProvider.notifier).lockOnColdStart();
+        target = '/lock';
+      }
+    }
+    Navigator.of(context).pushReplacementNamed(target);
   }
 
   @override

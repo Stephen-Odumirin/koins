@@ -49,4 +49,21 @@ void main() {
     final saved = (await tester.runAsync(planDb.loadPlans))!;
     expect(saved.single.name, 'Holiday');
   });
+
+  testWidgets('a fractional duration is rejected', (tester) async {
+    _tallViewport(tester);
+    await pumpWithOverrides(
+      tester,
+      CreateSavingsScreen(initialProduct: SavingsRepository.products.first),
+    );
+    await tester.enterText(find.widgetWithText(TextFormField, 'Savings name'), 'Holiday');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Target amount'), '1000');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Monthly contribution'), '100');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Duration (months)'), '0.4');
+    await tester.tap(find.text('Create'));
+    await tester.pump();
+    expect(find.text('Duration (months) must be a whole number of at least 1'),
+        findsOneWidget);
+    expect(find.text('Savings Created Successfully'), findsNothing);
+  });
 }

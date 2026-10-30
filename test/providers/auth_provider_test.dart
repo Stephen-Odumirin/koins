@@ -5,11 +5,16 @@ import 'package:savings_app/providers/auth_provider.dart';
 import 'package:savings_app/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/in_memory_secret_store.dart';
+
 Future<ProviderContainer> _container() async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(
-    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      secretStoreProvider.overrideWithValue(InMemorySecretStore()),
+    ],
   );
   addTearDown(container.dispose);
   return container;

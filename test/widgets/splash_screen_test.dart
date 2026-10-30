@@ -6,16 +6,25 @@ import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:savings_app/services/secret_store.dart';
+
+import '../helpers/in_memory_secret_store.dart';
+import '../helpers/throwing_secret_store.dart';
+
 Future<void> _pumpSplash(
   WidgetTester tester,
   Map<String, Object> stored, {
   bool disableAnimations = false,
+  SecretStore? secrets,
 }) async {
   SharedPreferences.setMockInitialValues(stored);
   final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        secretStoreProvider.overrideWithValue(secrets ?? InMemorySecretStore()),
+      ],
       child: MaterialApp(
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(
@@ -43,6 +52,16 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
     expect(find.text('dashboard-page'), findsOneWidget);
+  });
+
+  testWidgets('a failing PIN check sends the user to login, not stuck',
+      (tester) async {
+    await _pumpSplash(tester, {'logged_in_email': 'a@b.com'},
+        secrets: ThrowingSecretStore());
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(find.text('login-page'), findsOneWidget);
+    expect(find.text('dashboard-page'), findsNothing);
   });
 
   testWidgets('logged out and onboarded goes to login', (tester) async {

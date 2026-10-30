@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/providers.dart';
 import '../../utils/validators.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/brand_mark.dart';
@@ -20,6 +21,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
   bool _loading = false;
   bool _obscure = true;
+  bool _argumentShown = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argumentShown) return;
+    _argumentShown = true;
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    if (arg is String) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showMessage(arg));
+    }
+  }
 
   @override
   void dispose() {
@@ -36,7 +49,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref.read(authProvider.notifier).login(_email.text, _password.text);
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/dashboard');
+      final hasPin = await ref.read(pinStoreProvider).hasPin();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(
+        hasPin ? '/dashboard' : '/pin-setup',
+      );
     } on AppException catch (e) {
       _showMessage(e.message);
     } catch (_) {

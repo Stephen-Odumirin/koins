@@ -93,6 +93,18 @@ void main() {
     expect(nav.canPop(), isFalse);
   });
 
+  testWidgets('system Back saves the flag and goes to login', (tester) async {
+    final prefs = await _pump(tester);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text('login-page'), findsOneWidget);
+    expect(prefs.getBool('onboarding_complete'), isTrue);
+    final nav = tester.state<NavigatorState>(find.byType(Navigator));
+    expect(nav.canPop(), isFalse);
+  });
+
   testWidgets('double tap on Skip navigates once', (tester) async {
     late _FakeStorage fake;
     await _pump(tester, storage: (p) => fake = _FakeStorage(p));

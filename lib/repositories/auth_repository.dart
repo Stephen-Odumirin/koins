@@ -1,11 +1,13 @@
 import '../services/auth_service.dart';
 import '../services/local_storage_service.dart';
+import '../services/pin_store.dart';
 
 class AuthRepository {
-  AuthRepository(this._auth, this._storage);
+  AuthRepository(this._auth, this._storage, this._pins);
 
   final AuthService _auth;
   final LocalStorageService _storage;
+  final PinStore _pins;
 
   String? get currentUserEmail => _storage.loggedInEmail;
 
@@ -14,5 +16,9 @@ class AuthRepository {
     await _storage.saveLoggedInEmail(email.trim().toLowerCase());
   }
 
-  Future<void> logout() => _storage.clearLoggedInUser();
+  /// Ends the session and clears the PIN and biometric setting.
+  Future<void> logout() async {
+    await _storage.clearLoggedInUser();
+    await _pins.clear();
+  }
 }

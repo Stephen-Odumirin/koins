@@ -132,7 +132,7 @@ class _CreateSavingsScreenState extends ConsumerState<CreateSavingsScreen> {
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _submit(),
                   enabled: !_saving,
-                  validator: (v) => Validators.positiveNumber(v, 'Duration (months)'),
+                  validator: (v) => Validators.positiveWholeNumber(v, 'Duration (months)'),
                 ),
                 const SizedBox(height: 28),
                 FilledButton(
