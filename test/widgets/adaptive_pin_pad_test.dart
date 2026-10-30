@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/widgets/pin/adaptive_pin_pad.dart';
 import 'package:savings_app/widgets/pin/pin_dots.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 Future<void> tapDigits(WidgetTester tester, String digits) async {
   for (final d in digits.split('')) {
@@ -11,6 +12,8 @@ Future<void> tapDigits(WidgetTester tester, String digits) async {
 }
 
 Widget host(Widget child, {double scale = 1}) => MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
   home: MediaQuery(
     data: MediaQueryData(textScaler: TextScaler.linear(scale)),
     child: Scaffold(

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_spacing.dart';
+import '../../../l10n/app_localizations.dart';
 
 class SuccessStep extends StatelessWidget {
   const SuccessStep({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Center(
       child: Padding(
@@ -21,7 +23,7 @@ class SuccessStep extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'Savings Created Successfully',
+              l10n.createSuccess,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall,
             ),
@@ -30,7 +32,7 @@ class SuccessStep extends StatelessWidget {
               key: const Key('create-done'),
               onPressed: () =>
                   Navigator.of(context).popUntil((route) => route.isFirst),
-              child: const Text('Back to dashboard'),
+              child: Text(l10n.createBackToDashboard),
             ),
           ],
         ),

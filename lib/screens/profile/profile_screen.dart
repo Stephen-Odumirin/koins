@@ -9,20 +9,22 @@ import '../../providers/profile_provider.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/loading_view.dart';
 import '../../widgets/staggered_reveal.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final profile = ref.watch(profileProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: profile.when(
         loading: () => const LoadingView(),
         error: (_, _) => ErrorView(
-          message: 'Could not load your profile.',
+          message: l10n.profileLoadError,
           onRetry: () => ref.invalidate(profileProvider),
         ),
         data: (user) => _ProfileBody(user: user),
@@ -38,6 +40,7 @@ class _ProfileBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -68,11 +71,11 @@ class _ProfileBody extends ConsumerWidget {
             const SizedBox(height: 24),
             StaggeredReveal(
               index: 1,
-              child: _InfoTile(icon: Icons.mail_outline, label: 'Email', value: user.email),
+              child: _InfoTile(icon: Icons.mail_outline, label: l10n.profileEmail, value: user.email),
             ),
             StaggeredReveal(
               index: 2,
-              child: _InfoTile(icon: Icons.phone_outlined, label: 'Phone number', value: user.phone),
+              child: _InfoTile(icon: Icons.phone_outlined, label: l10n.profilePhone, value: user.phone),
             ),
             StaggeredReveal(
               index: 3,
@@ -91,7 +94,7 @@ class _ProfileBody extends ConsumerWidget {
                   );
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
+                label: Text(l10n.profileLogout),
               ),
             ),
           ],
@@ -128,12 +131,13 @@ class _NotificationsTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final unread = ref.watch(unreadCountProvider);
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: ListTile(
         leading: Icon(Icons.notifications_outlined, color: theme.colorScheme.primary),
-        title: Text('Notifications', style: theme.textTheme.titleMedium),
+        title: Text(l10n.notificationsTitle, style: theme.textTheme.titleMedium),
         trailing: unread > 0
             ? Badge(label: Text('$unread'), child: const Icon(Icons.chevron_right))
             : const Icon(Icons.chevron_right),

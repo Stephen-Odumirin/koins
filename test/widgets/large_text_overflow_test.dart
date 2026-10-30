@@ -15,6 +15,7 @@ import 'package:savings_app/services/user_api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/in_memory_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 const _userJson =
     '{"firstName":"Emily","lastName":"Johnson","email":"emily.johnson.long.address@example.com","phone":"+1 555 0100"}';
@@ -52,6 +53,8 @@ Future<void> _pump(WidgetTester tester, Widget screen) async {
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light(),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(

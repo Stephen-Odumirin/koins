@@ -9,6 +9,7 @@ import '../../providers/providers.dart';
 import '../../utils/validators.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/brand_mark.dart';
+import '../../l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -46,6 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _submit() async {
     if (_loading) return;
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _loading = true);
     try {
@@ -53,8 +55,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ref.read(notificationsProvider.notifier).deliver(
             AppNotification(
               id: DateTime.now().microsecondsSinceEpoch.toString(),
-              title: 'Welcome to KoinsMFB',
-              body: 'Your savings are one tap away.',
+              title: l10n.welcomeNotificationTitle,
+              body: l10n.welcomeNotificationBody,
               receivedAt: DateTime.now(),
             ),
           );
@@ -67,7 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on AppException catch (e) {
       _showMessage(e.message);
     } catch (_) {
-      _showMessage('Something went wrong. Please try again.');
+      _showMessage(l10n.loginGenericError);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -78,10 +80,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _comingSoon() => _showMessage('Coming soon');
+  void _comingSoon() => _showMessage(AppLocalizations.of(context)!.loginComingSoon);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
@@ -111,13 +114,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const Center(child: BrandMark(size: 72)),
                       const SizedBox(height: 24),
                       Text(
-                        'Welcome back',
+                        l10n.loginWelcomeBack,
                         style: theme.textTheme.headlineSmall,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Sign in to manage your savings',
+                        l10n.loginSubtitle,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -127,7 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       AppTextField(
                         key: const Key('login-email'),
                         controller: _email,
-                        label: 'Email address',
+                        label: l10n.loginEmailLabel,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         autofillHints: const [AutofillHints.email],
@@ -138,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       AppTextField(
                         key: const Key('login-password'),
                         controller: _password,
-                        label: 'Password',
+                        label: l10n.loginPasswordLabel,
                         obscureText: _obscure,
                         textInputAction: TextInputAction.done,
                         autofillHints: const [AutofillHints.password],
@@ -146,7 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onFieldSubmitted: (_) => _submit(),
                         enabled: !_loading,
                         suffixIcon: IconButton(
-                          tooltip: _obscure ? 'Show password' : 'Hide password',
+                          tooltip: _obscure ? l10n.loginShowPassword : l10n.loginHidePassword,
                           icon: Icon(
                             _obscure
                                 ? Icons.visibility_outlined
@@ -165,7 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Log in'),
+                            : Text(l10n.loginSubmit),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
@@ -173,11 +176,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         children: [
                           TextButton(
                             onPressed: _comingSoon,
-                            child: const Text('Forgot password?'),
+                            child: Text(l10n.loginForgotPassword),
                           ),
                           TextButton(
                             onPressed: _comingSoon,
-                            child: const Text('Create account'),
+                            child: Text(l10n.loginCreateAccount),
                           ),
                         ],
                       ),

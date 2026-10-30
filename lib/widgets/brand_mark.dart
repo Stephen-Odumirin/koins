@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../l10n/app_localizations.dart';
 
 class BrandMark extends StatelessWidget {
   const BrandMark({super.key, this.size = 64});
@@ -12,7 +13,7 @@ class BrandMark extends StatelessWidget {
       'assets/icons/login_logo.svg',
       width: size,
       height: size,
-      semanticsLabel: 'KoinsMFB logo',
+      semanticsLabel: AppLocalizations.of(context)!.brandLogoLabel,
     );
   }
 }

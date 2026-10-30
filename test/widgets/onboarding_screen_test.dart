@@ -8,6 +8,7 @@ import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/screens/onboarding/onboarding_screen.dart';
 import 'package:savings_app/services/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 class _FakeStorage extends LocalStorageService {
   _FakeStorage(super.prefs, {this.fail = false});
@@ -40,6 +41,8 @@ Future<SharedPreferences> _pump(
           localStorageProvider.overrideWithValue(storage(prefs)),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         initialRoute: '/onboarding',
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context)

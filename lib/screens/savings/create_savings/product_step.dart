@@ -6,6 +6,7 @@ import '../../../models/savings_product.dart';
 import '../../../providers/savings_provider.dart';
 import '../../../utils/formatters.dart';
 import 'create_draft.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ProductStep extends ConsumerWidget {
   const ProductStep({super.key});
@@ -15,12 +16,13 @@ class ProductStep extends ConsumerWidget {
     final products =
         ref.watch(productsProvider).value ?? const <SavingsProduct>[];
     final selected = ref.watch(createDraftProvider.select((d) => d.product));
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        Text('Choose a product', style: theme.textTheme.headlineSmall),
+        Text(l10n.productStepTitle, style: theme.textTheme.headlineSmall),
         const SizedBox(height: AppSpacing.md),
         for (final p in products)
           Card(
@@ -46,7 +48,11 @@ class ProductStep extends ConsumerWidget {
                     Text(p.name, style: theme.textTheme.titleMedium),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      '${p.interestRate.toStringAsFixed(0)}% a year · ${p.durationLabel} · from ${formatNaira(p.minDeposit)} a month',
+                      l10n.productStepSummary(
+                        p.interestRate.toStringAsFixed(0),
+                        p.durationLabel,
+                        formatNaira(p.minDeposit),
+                      ),
                       style: theme.textTheme.bodyMedium,
                     ),
                   ],

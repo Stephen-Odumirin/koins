@@ -11,6 +11,7 @@ import 'package:savings_app/services/secret_store.dart';
 
 import '../helpers/in_memory_secret_store.dart';
 import '../helpers/throwing_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 Future<void> _pumpSplash(
   WidgetTester tester,
@@ -27,6 +28,8 @@ Future<void> _pumpSplash(
         secretStoreProvider.overrideWithValue(secrets ?? InMemorySecretStore()),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(
             context,

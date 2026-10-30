@@ -4,6 +4,7 @@ import '../models/savings_plan.dart';
 import '../utils/formatters.dart';
 import '../utils/plan_progress.dart';
 import 'progress_ring.dart';
+import '../l10n/app_localizations.dart';
 
 class SavingsPlanTile extends StatelessWidget {
   const SavingsPlanTile({super.key, required this.plan, this.onTap});
@@ -17,6 +18,7 @@ class SavingsPlanTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final progress = planProgress(plan);
 
     return Card(
@@ -35,7 +37,7 @@ class SavingsPlanTile extends StatelessWidget {
                 trackColor: scheme.surfaceContainerHighest,
                 size: 52,
                 child: Text(
-                  '${(progress * 100).round()}%',
+                  l10n.percentValue((progress * 100).round()),
                   style: theme.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -49,7 +51,7 @@ class SavingsPlanTile extends StatelessWidget {
                     Text(plan.name, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 2),
                     Text(
-                      '${plan.productType} · Monthly',
+                      l10n.planTileSubtitle(plan.productType),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -66,7 +68,7 @@ class SavingsPlanTile extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                   Text(
-                    '${formatNaira(plan.monthlyContribution)} / mo',
+                    l10n.planTilePerMonth(formatNaira(plan.monthlyContribution)),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),

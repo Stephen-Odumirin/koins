@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import 'pin_dots.dart';
+import '../../l10n/app_localizations.dart';
 
 const double _maxKeySize = 88;
 
@@ -92,7 +93,7 @@ class AdaptivePinPadState extends State<AdaptivePinPad> {
               _PinKey(
                 key: const Key('pin-backspace'),
                 size: size,
-                semanticLabel: 'Delete',
+                semanticLabel: AppLocalizations.of(context)!.pinDelete,
                 onTap: _backspace,
                 child: const Icon(Icons.backspace_outlined),
               ),

@@ -5,6 +5,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../models/app_notification.dart';
 import '../../providers/notifications_provider.dart';
 import '../../widgets/empty_view.dart';
+import '../../l10n/app_localizations.dart';
 
 /// The notifications inbox. Opening it marks everything as read.
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -26,14 +27,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final items = ref.watch(notificationsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
+      appBar: AppBar(title: Text(l10n.notificationsTitle)),
       body: items.isEmpty
-          ? const EmptyView(
+          ? EmptyView(
               icon: Icons.notifications_none,
-              message: 'No notifications yet',
+              message: l10n.notificationsEmpty,
             )
           : Center(
               child: ConstrainedBox(

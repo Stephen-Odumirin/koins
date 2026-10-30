@@ -3,30 +3,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../providers/providers.dart';
+import '../../l10n/app_localizations.dart';
 
 class _Slide {
   const _Slide(this.image, this.title, this.body);
 
   final String image;
-  final String title;
-  final String body;
+  final String Function(AppLocalizations) title;
+  final String Function(AppLocalizations) body;
 }
 
-const _slides = [
+final _slides = [
   _Slide(
     'assets/onboarding/illustration_1.svg',
-    'Keep your savings in view',
-    'See your balance and your savings in one clear place.',
+    (l) => l.onboardingSlide1Title,
+    (l) => l.onboardingSlide1Body,
   ),
   _Slide(
     'assets/onboarding/illustration_2.svg',
-    'Plan for what matters',
-    'Set a goal, pick a plan and follow your progress towards it.',
+    (l) => l.onboardingSlide2Title,
+    (l) => l.onboardingSlide2Body,
   ),
   _Slide(
     'assets/onboarding/illustration_3.svg',
-    'Your details stay protected',
-    'Your account is protected by your login, so only you can see it.',
+    (l) => l.onboardingSlide3Title,
+    (l) => l.onboardingSlide3Body,
   ),
 ];
 
@@ -53,15 +54,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Future<void> _finish() async {
     if (_finishing) return;
     _finishing = true;
+    final l10n = AppLocalizations.of(context)!;
     try {
       await ref.read(localStorageProvider).saveOnboardingComplete();
     } catch (_) {
       _finishing = false;
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Couldn't save your progress. Please try again."),
-        ),
+        SnackBar(content: Text(l10n.onboardingSaveError)),
       );
       return;
     }
@@ -82,6 +82,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return PopScope(
       canPop: false,
@@ -99,7 +100,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: TextButton(
                     key: const Key('onboarding-skip'),
                     onPressed: _finish,
-                    child: const Text('Skip'),
+                    child: Text(l10n.onboardingSkip),
                   ),
                 ),
               ),
@@ -129,7 +130,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               child: Column(
                                 children: [
                                   Text(
-                                    slide.title,
+                                    slide.title(l10n),
                                     key: const Key('onboarding-title'),
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.headlineSmall
@@ -137,7 +138,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    slide.body,
+                                    slide.body(l10n),
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyLarge,
                                   ),
@@ -177,7 +178,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: FilledButton(
                     key: const Key('onboarding-next'),
                     onPressed: _next,
-                    child: Text(_isLast ? 'Get started' : 'Next'),
+                    child: Text(_isLast ? l10n.onboardingGetStarted : l10n.next),
                   ),
                 ),
               ),

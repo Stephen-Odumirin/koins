@@ -11,6 +11,7 @@ import '../../widgets/loading_view.dart';
 import '../../widgets/savings_product_card.dart';
 import '../../widgets/staggered_reveal.dart';
 import 'product_details_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProductsScreen extends ConsumerStatefulWidget {
   const ProductsScreen({super.key});
@@ -30,11 +31,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final products = ref.watch(productsProvider);
     final filter = ref.watch(productFilterProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Savings products')),
+      appBar: AppBar(title: Text(l10n.productsTitle)),
       body: Column(
         children: [
           Center(
@@ -55,12 +57,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                       controller: _search,
                       textInputAction: TextInputAction.search,
                       decoration: InputDecoration(
-                        hintText: 'Search savings products',
+                        hintText: l10n.productsSearchHint,
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _search.text.isEmpty
                             ? null
                             : IconButton(
-                                tooltip: 'Clear search',
+                                tooltip: l10n.productsClearSearch,
                                 icon: const Icon(Icons.close),
                                 onPressed: () {
                                   _search.clear();
@@ -82,7 +84,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                     FilterChip(
                       shape: const StadiumBorder(),
                       key: const Key('flexible-filter'),
-                      label: const Text('Flexible only'),
+                      label: Text(l10n.productsFlexibleOnly),
                       selected: filter.flexibleOnly,
                       onSelected: (value) => ref
                           .read(productFilterProvider.notifier)
@@ -97,15 +99,15 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
             child: products.when(
               loading: () => const LoadingView(),
               error: (_, _) => ErrorView(
-                message: 'Could not load products.',
+                message: l10n.productsLoadError,
                 onRetry: () => ref.invalidate(productsProvider),
               ),
               data: (_) {
                 final list = ref.watch(filteredProductsProvider);
                 if (list.isEmpty) {
-                  return const EmptyView(
+                  return EmptyView(
                     icon: Icons.search_off,
-                    message: 'No products match your search.',
+                    message: l10n.productsNoMatch,
                   );
                 }
                 return RefreshIndicator(

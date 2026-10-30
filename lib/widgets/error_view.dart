@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_spacing.dart';
+import '../l10n/app_localizations.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.message, required this.onRetry});
@@ -28,7 +29,7 @@ class ErrorView extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Try again'),
+              label: Text(AppLocalizations.of(context)!.tryAgain),
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../models/savings_product.dart';
+import '../l10n/app_localizations.dart';
 
 class SavingsProductCard extends StatelessWidget {
   const SavingsProductCard({
@@ -18,6 +19,7 @@ class SavingsProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -54,7 +56,7 @@ class SavingsProductCard extends StatelessWidget {
                   ),
                 ),
                 Chip(
-                  label: Text('${product.interestRate.round()}% p.a.'),
+                  label: Text(l10n.productInterestChip('${product.interestRate.round()}')),
                   visualDensity: VisualDensity.compact,
                   backgroundColor: AppColors.accent.withValues(alpha: 0.25),
                   labelStyle: TextStyle(color: scheme.onSurface),
@@ -81,7 +83,7 @@ class SavingsProductCard extends StatelessWidget {
             // The theme's pill button is full width; keep it out of a Row.
             FilledButton.tonal(
               onPressed: onViewDetails,
-              child: const Text('View details'),
+              child: Text(l10n.productViewDetails),
             ),
           ],
         ),

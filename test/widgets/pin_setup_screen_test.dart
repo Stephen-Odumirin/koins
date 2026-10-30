@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_biometric_authenticator.dart';
 import '../helpers/in_memory_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 // Pump in short steps; the screens finish async work off the test clock.
 Future<void> settle(WidgetTester tester) async {
@@ -43,6 +44,8 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
           routes: {
             '/biometric-offer': (_) => const Scaffold(body: Text('OFFER')),
             '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),

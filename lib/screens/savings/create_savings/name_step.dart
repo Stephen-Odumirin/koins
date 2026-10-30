@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../widgets/app_text_field.dart';
 import 'create_draft.dart';
+import '../../../l10n/app_localizations.dart';
 
 class NameStep extends ConsumerStatefulWidget {
   const NameStep({super.key});
@@ -30,13 +31,13 @@ class _NameStepState extends ConsumerState<NameStep> {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         Text(
-          'What are you saving for?',
+          AppLocalizations.of(context)!.nameStepTitle,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: AppSpacing.md),
         AppTextField(
           controller: _name,
-          label: 'Savings name',
+          label: AppLocalizations.of(context)!.nameStepLabel,
           textInputAction: TextInputAction.done,
           inputFormatters: [LengthLimitingTextInputFormatter(40)],
           onChanged: ref.read(createDraftProvider.notifier).setName,

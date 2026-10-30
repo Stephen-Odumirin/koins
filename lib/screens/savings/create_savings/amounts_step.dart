@@ -8,6 +8,7 @@ import '../../../utils/formatters.dart';
 import '../../../utils/savings_tally.dart';
 import '../../../widgets/app_text_field.dart';
 import 'create_draft.dart';
+import '../../../l10n/app_localizations.dart';
 
 final _commas = NumberFormat('#,###', 'en_US');
 
@@ -96,7 +97,7 @@ class _AmountsStepState extends ConsumerState<AmountsStep> {
             child: TextButton(
               key: const Key('tally-adjust'),
               onPressed: _adjust,
-              child: const Text('Adjust'),
+              child: Text(AppLocalizations.of(context)!.amountsAdjust),
             ),
           ),
         const SizedBox(height: AppSpacing.sm),
@@ -106,6 +107,7 @@ class _AmountsStepState extends ConsumerState<AmountsStep> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final d = ref.watch(createDraftProvider);
     final n = ref.read(createDraftProvider.notifier);
     final theme = Theme.of(context);
@@ -119,49 +121,53 @@ class _AmountsStepState extends ConsumerState<AmountsStep> {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         Text(
-          'How much, and for how long?',
+          l10n.amountsTitle,
           style: theme.textTheme.headlineSmall,
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          'Fill in two. We work out the third.',
+          l10n.amountsSubtitle,
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: AppSpacing.md),
         if (d.computed == TallyField.target)
           _locked(
             'tally-target',
-            'Target amount',
+            l10n.amountsTargetLabel,
             _text(solved?.$1),
             adjustable: true,
           )
         else
           _field(
             'tally-target',
-            'Target amount',
+            l10n.amountsTargetLabel,
             _target,
             (v) => n.setTarget(_parse(v)),
           ),
         if (d.computed == TallyField.monthly)
           _locked(
             'tally-monthly',
-            'Monthly amount',
+            l10n.amountsMonthlyLabel,
             _text(solved?.$2),
             adjustable: true,
           )
         else
           _field(
             'tally-monthly',
-            'Monthly amount',
+            l10n.amountsMonthlyLabel,
             _monthly,
             (v) => n.setMonthly(_parse(v)),
           ),
         if (d.monthsLocked)
-          _locked('tally-months', 'Months', _text(d.months))
+          _locked(
+            'tally-months',
+            l10n.amountsMonthsLockedLabel,
+            _text(d.months),
+          )
         else
           _field(
             'tally-months',
-            'Months (1 to 60)',
+            l10n.amountsMonthsLabel,
             _months,
             (v) => n.setMonths(_parse(v)),
           ),
@@ -169,7 +175,7 @@ class _AmountsStepState extends ConsumerState<AmountsStep> {
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
             child: Text(
-              "I'll save ${formatNaira(solved.$2)} every month for ${solved.$3} ${solved.$3 == 1 ? 'month' : 'months'}.",
+              l10n.amountsSummary(formatNaira(solved.$2), solved.$3),
               style: theme.textTheme.titleMedium,
             ),
           ),
@@ -183,7 +189,7 @@ class _AmountsStepState extends ConsumerState<AmountsStep> {
           ),
         _field(
           'tally-opening',
-          'Opening deposit (optional)',
+          l10n.amountsOpeningLabel,
           _opening,
           (v) => n.setOpening(_parse(v) ?? 0),
         ),

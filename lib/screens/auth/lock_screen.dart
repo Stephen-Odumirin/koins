@@ -7,6 +7,7 @@ import '../../providers/app_lock_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/providers.dart';
 import '../../widgets/pin/adaptive_pin_pad.dart';
+import '../../l10n/app_localizations.dart';
 
 const _maxAttempts = 3;
 
@@ -45,9 +46,10 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   Future<void> _tryBiometric() async {
+    final reason = AppLocalizations.of(context)!.lockUnlockReason;
     final ok = await ref
         .read(biometricGateProvider)
-        .authenticate(reason: 'Unlock KoinsMFB');
+        .authenticate(reason: reason);
     if (ok && mounted) _unlock();
   }
 
@@ -64,6 +66,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   Future<void> _submit(String value) async {
     if (_busy || value.length != 4) return;
+    final l10n = AppLocalizations.of(context)!;
     _busy = true;
     final pins = ref.read(pinStoreProvider);
     final lock = ref.read(appLockProvider.notifier);
@@ -84,7 +87,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         appNavigatorKey.currentState!.pushNamedAndRemoveUntil(
           '/login',
           (_) => false,
-          arguments: 'Too many attempts. Please log in again.',
+          arguments: l10n.lockTooManyAttempts,
         );
         lock.unlock();
         return;
@@ -92,16 +95,13 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       if (!mounted) return;
       _pad.currentState?.clear();
       setState(
-        () => _error =
-            'Incorrect PIN. $left attempt${left == 1 ? '' : 's'} left.',
+        () => _error = l10n.lockIncorrectPin(left),
       );
     } catch (_) {
       if (!mounted) return;
       _pad.currentState?.clear();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not check your PIN. Please try again.'),
-        ),
+        SnackBar(content: Text(l10n.lockCheckError)),
       );
     } finally {
       _busy = false;
@@ -110,6 +110,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return PopScope(
       canPop: false,
@@ -133,7 +134,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       color: theme.colorScheme.primary,
                     ),
                     const SizedBox(height: 16),
-                    Text('Enter your PIN', style: theme.textTheme.titleLarge),
+                    Text(l10n.lockEnterPin, style: theme.textTheme.titleLarge),
                     const SizedBox(height: 24),
                     AdaptivePinPad(key: _pad, length: 4, onCompleted: _submit),
                     if (_error != null) ...[
@@ -149,7 +150,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                         key: const Key('lock-biometric'),
                         onPressed: _tryBiometric,
                         icon: const Icon(Icons.fingerprint),
-                        label: const Text('Use biometrics'),
+                        label: Text(l10n.lockUseBiometrics),
                       ),
                     ],
                   ],

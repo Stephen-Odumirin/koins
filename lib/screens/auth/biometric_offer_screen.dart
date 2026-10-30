@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/providers.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Offered once after PIN setup when the device supports biometrics. The
 /// PIN is already set, so Back is allowed and the user can always unlock
@@ -20,11 +21,12 @@ class _BiometricOfferScreenState extends ConsumerState<BiometricOfferScreen> {
 
   Future<void> _enable() async {
     if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
       final ok = await ref
           .read(biometricGateProvider)
-          .authenticate(reason: 'Confirm to enable biometric unlock');
+          .authenticate(reason: l10n.biometricConfirmReason);
       if (!mounted) return;
       if (ok) {
         await ref.read(pinStoreProvider).setBiometricsEnabled(true);
@@ -32,11 +34,7 @@ class _BiometricOfferScreenState extends ConsumerState<BiometricOfferScreen> {
         Navigator.of(context).pushReplacementNamed('/dashboard');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Biometrics weren't set up. You can still unlock with your PIN.",
-            ),
-          ),
+          SnackBar(content: Text(l10n.biometricSetupFailed)),
         );
       }
     } finally {
@@ -48,9 +46,9 @@ class _BiometricOfferScreenState extends ConsumerState<BiometricOfferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Biometric unlock')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -67,14 +65,13 @@ class _BiometricOfferScreenState extends ConsumerState<BiometricOfferScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Unlock faster with biometrics',
+                    l10n.biometricHeadline,
                     style: theme.textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Use your fingerprint or face instead of typing your PIN. '
-                    'Your PIN still works either way.',
+                    l10n.biometricBody,
                     style: theme.textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -82,13 +79,13 @@ class _BiometricOfferScreenState extends ConsumerState<BiometricOfferScreen> {
                   FilledButton(
                     key: const Key('biometric-enable'),
                     onPressed: _busy ? null : _enable,
-                    child: const Text('Enable'),
+                    child: Text(l10n.biometricEnable),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
                     key: const Key('biometric-later'),
                     onPressed: _busy ? null : _later,
-                    child: const Text('Not now'),
+                    child: Text(l10n.biometricNotNow),
                   ),
                 ],
               ),

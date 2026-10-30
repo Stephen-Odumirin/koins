@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/models/savings_plan.dart';
 import 'package:savings_app/providers/savings_provider.dart';
+import 'package:savings_app/providers/savings_totals_provider.dart';
 import 'package:savings_app/screens/savings/all_plans_screen.dart';
 import 'package:savings_app/widgets/brand_loader.dart';
 import 'package:savings_app/widgets/empty_view.dart';
@@ -15,6 +16,7 @@ import 'package:savings_app/widgets/progress_ring.dart';
 import 'package:savings_app/widgets/savings_plan_tile.dart';
 
 import '../helpers/pump_app.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 void _tall(WidgetTester tester) {
   tester.view.physicalSize = const Size(800, 2400);
@@ -60,13 +62,73 @@ Override _plansOverride(Future<List<SavingsPlan>> Function() build) =>
 void main() {
   _tileRingTests();
 
+  testWidgets('dashboard has no app bar', (tester) async {
+    _tall(tester);
+    await pumpWithOverrides(tester, const DashboardScreen());
+
+    expect(find.byType(AppBar), findsNothing);
+  });
+
+  testWidgets('profile icon button opens /profile', (tester) async {
+    _tall(tester);
+    await pumpWithOverrides(
+      tester,
+      const DashboardScreen(),
+      routes: {'/profile': (_) => const Scaffold(body: Text('PROFILE'))},
+    );
+
+    final button = find.byKey(const Key('dashboard-profile'));
+    expect(button, findsOneWidget);
+    expect(
+      find.descendant(
+        of: button,
+        matching: find.byIcon(Icons.account_circle_outlined),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+
+    expect(find.text('PROFILE'), findsOneWidget);
+  });
+
+  testWidgets('eye toggle hides and shows the total without changing it', (
+    tester,
+  ) async {
+    _tall(tester);
+    await pumpWithOverrides(tester, const DashboardScreen());
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(MaterialApp)),
+    );
+    final before = container.read(totalSavingsProvider);
+
+    expect(find.text('₦850,000'), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('total-visibility')));
+    await tester.pumpAndSettle();
+    expect(find.text('₦850,000'), findsNothing);
+    expect(find.text('₦ ••••••'), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
+    expect(container.read(totalSavingsProvider), before);
+
+    await tester.tap(find.byKey(const Key('total-visibility')));
+    await tester.pumpAndSettle();
+    expect(find.text('₦850,000'), findsOneWidget);
+    expect(find.text('₦ ••••••'), findsNothing);
+    expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+    expect(container.read(totalSavingsProvider), before);
+  });
+
   testWidgets('dashboard shows the loader while plans load', (tester) async {
     _tall(tester);
     final never = Completer<List<SavingsPlan>>();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [_plansOverride(() => never.future)],
-        child: const MaterialApp(home: DashboardScreen()),
+        child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
       ),
     );
     await tester.pump();
@@ -89,7 +151,9 @@ void main() {
             throw Exception('boom');
           }),
         ],
-        child: const MaterialApp(home: DashboardScreen()),
+        child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -110,7 +174,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [_plansOverride(() async => <SavingsPlan>[])],
-        child: const MaterialApp(home: DashboardScreen()),
+        child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,home: DashboardScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -124,7 +190,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [_plansOverride(() async => <SavingsPlan>[])],
-        child: const MaterialApp(home: AllPlansScreen()),
+        child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,home: AllPlansScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -137,7 +205,6 @@ void main() {
     _tall(tester);
     await pumpWithOverrides(tester, const DashboardScreen());
 
-    expect(find.text('KoinsMFB'), findsOneWidget);
     expect(find.text('Good Morning, John Doe'), findsOneWidget);
     expect(find.text('₦850,000'), findsOneWidget);
     expect(find.text('Emergency Fund'), findsOneWidget);

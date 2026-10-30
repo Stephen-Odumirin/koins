@@ -6,6 +6,7 @@ import '../../../models/savings_plan.dart';
 import '../../../providers/savings_provider.dart';
 import '../../../utils/formatters.dart';
 import 'create_draft.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ReviewStep extends ConsumerStatefulWidget {
   const ReviewStep({super.key});
@@ -45,15 +46,14 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
       if (!mounted) return;
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not save your savings. Please try again.'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.createSaveError)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final d = ref.watch(createDraftProvider);
     final s = d.solved;
     final theme = Theme.of(context);
@@ -71,21 +71,21 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        Text('Review your plan', style: theme.textTheme.headlineSmall),
+        Text(l10n.createReviewTitle, style: theme.textTheme.headlineSmall),
         const SizedBox(height: AppSpacing.md),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               children: [
-                row('Name', d.name.trim()),
-                row('Product', d.product?.name ?? ''),
+                row(l10n.reviewName, d.name.trim()),
+                row(l10n.reviewProduct, d.product?.name ?? ''),
                 if (s != null) ...[
-                  row('Target', formatNaira(s.$1)),
-                  row('Monthly', formatNaira(s.$2)),
-                  row('Months', '${s.$3}'),
+                  row(l10n.reviewTarget, formatNaira(s.$1)),
+                  row(l10n.reviewMonthly, formatNaira(s.$2)),
+                  row(l10n.reviewMonths, '${s.$3}'),
                 ],
-                row('Opening deposit', formatNaira(d.opening)),
+                row(l10n.reviewOpeningDeposit, formatNaira(d.opening)),
               ],
             ),
           ),
@@ -100,7 +100,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Create'),
+              : Text(l10n.createSubmit),
         ),
       ],
     );

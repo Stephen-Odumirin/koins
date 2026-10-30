@@ -9,6 +9,7 @@ import 'create_savings/name_step.dart';
 import 'create_savings/product_step.dart';
 import 'create_savings/review_step.dart';
 import 'create_savings/success_step.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Create savings as a stepper. The draft lives in a provider scoped to this
 /// screen, so leaving it discards what was entered.
@@ -35,6 +36,7 @@ class _Flow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final d = ref.watch(createDraftProvider);
     final n = ref.read(createDraftProvider.notifier);
     final done = d.step == CreateStep.success;
@@ -42,7 +44,7 @@ class _Flow extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create savings'),
+        title: Text(l10n.createSavings),
         automaticallyImplyLeading: false,
         leading: done
             ? null
@@ -81,7 +83,7 @@ class _Flow extends ConsumerWidget {
                 child: FilledButton(
                   key: const Key('create-next'),
                   onPressed: d.canContinue ? n.next : null,
-                  child: const Text('Next'),
+                  child: Text(l10n.next),
                 ),
               ),
             )

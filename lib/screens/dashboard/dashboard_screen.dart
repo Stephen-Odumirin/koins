@@ -13,6 +13,7 @@ import '../../widgets/savings_plan_tile.dart';
 import '../../widgets/staggered_reveal.dart';
 import '../savings/all_plans_screen.dart';
 import '../savings/saved_plan_details_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 const _recentCount = 3;
 
@@ -21,6 +22,7 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final plans = ref.watch(savingsPlansProvider);
     final total = ref.watch(totalSavingsProvider);
@@ -28,16 +30,6 @@ class DashboardScreen extends ConsumerWidget {
     final sorted = ref.watch(recentPlansProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('KoinsMFB'),
-        actions: [
-          IconButton(
-            tooltip: 'Profile',
-            icon: const Icon(Icons.account_circle_outlined),
-            onPressed: () => Navigator.of(context).pushNamed('/profile'),
-          ),
-        ],
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(savingsPlansProvider);
@@ -51,9 +43,22 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 StaggeredReveal(
                   index: 0,
-                  child: Text(
-                    'Good Morning, ${AppConstants.greetingName}',
-                    style: theme.textTheme.headlineSmall,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.dashboardGreeting(AppConstants.greetingName),
+                          style: theme.textTheme.headlineSmall,
+                        ),
+                      ),
+                      IconButton(
+                        key: const Key('dashboard-profile'),
+                        tooltip: l10n.dashboardProfileTooltip,
+                        icon: const Icon(Icons.account_circle_outlined),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/profile'),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -71,7 +76,7 @@ class DashboardScreen extends ConsumerWidget {
                             context,
                           ).pushNamed('/create-savings'),
                           icon: const Icon(Icons.add),
-                          label: const Text('Create savings'),
+                          label: Text(l10n.createSavings),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -80,7 +85,7 @@ class DashboardScreen extends ConsumerWidget {
                           onPressed: () =>
                               Navigator.of(context).pushNamed('/products'),
                           icon: const Icon(Icons.grid_view_rounded),
-                          label: const Text('View products'),
+                          label: Text(l10n.dashboardViewProducts),
                         ),
                       ),
                     ],
@@ -91,7 +96,7 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Recent savings',
+                        l10n.dashboardRecentSavings,
                         style: theme.textTheme.titleMedium,
                       ),
                     ),
@@ -102,7 +107,7 @@ class DashboardScreen extends ConsumerWidget {
                             builder: (_) => const AllPlansScreen(),
                           ),
                         ),
-                        child: const Text('See all'),
+                        child: Text(l10n.dashboardSeeAll),
                       ),
                   ],
                 ),
@@ -120,18 +125,17 @@ class DashboardScreen extends ConsumerWidget {
                   error: (_, _) => SizedBox(
                     height: 240,
                     child: ErrorView(
-                      message: 'Could not load your savings.',
+                      message: l10n.savingsLoadError,
                       onRetry: () => ref.invalidate(savingsPlansProvider),
                     ),
                   ),
                   data: (_) {
                     if (sorted.isEmpty) {
-                      return const SizedBox(
+                      return SizedBox(
                         height: 200,
                         child: EmptyView(
                           icon: Icons.savings_outlined,
-                          message:
-                              'No savings plans yet. Create your first one.',
+                          message: l10n.savingsEmpty,
                         ),
                       );
                     }
@@ -164,16 +168,29 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _BalanceCard extends StatelessWidget {
+class _BalanceCard extends StatefulWidget {
   const _BalanceCard({required this.total});
 
   final int total;
 
   @override
+  State<_BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<_BalanceCard> {
+  // Display only; not persisted and never touches the stored total.
+  bool _hidden = false;
+
+  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final onPrimary = scheme.onPrimary;
+    final amountStyle = theme.textTheme.headlineMedium?.copyWith(
+      color: onPrimary,
+      fontWeight: FontWeight.w800,
+    );
 
     return Container(
       width: double.infinity,
@@ -192,20 +209,36 @@ class _BalanceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Total savings',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: onPrimary.withValues(alpha: 0.85),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.dashboardTotalSavings,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onPrimary.withValues(alpha: 0.85),
+                  ),
+                ),
+              ),
+              IconButton(
+                key: const Key('total-visibility'),
+                tooltip: _hidden
+                    ? l10n.dashboardShowAmount
+                    : l10n.dashboardHideAmount,
+                color: onPrimary,
+                icon: Icon(
+                  _hidden
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+                onPressed: () => setState(() => _hidden = !_hidden),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          CountUpText(
-            value: total,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: onPrimary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+          const SizedBox(height: 4),
+          if (_hidden)
+            Text('₦ ••••••', style: amountStyle)
+          else
+            CountUpText(value: widget.total, style: amountStyle),
         ],
       ),
     );

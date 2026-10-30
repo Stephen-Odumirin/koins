@@ -7,6 +7,7 @@ import 'package:savings_app/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/in_memory_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 Future<ProviderContainer> _pumpLogin(
   WidgetTester tester, {
@@ -28,6 +29,8 @@ Future<ProviderContainer> _pumpLogin(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         routes: {
           '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
           '/pin-setup': (_) => const Scaffold(body: Text('PIN SETUP')),

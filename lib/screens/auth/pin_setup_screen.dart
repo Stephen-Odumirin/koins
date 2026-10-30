@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../providers/providers.dart';
 import '../../widgets/pin/adaptive_pin_pad.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Mandatory PIN setup shown after login. The PIN is required, so Back is
 /// blocked here and the only way forward is to set and confirm a PIN.
@@ -24,6 +25,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Future<void> _onCompleted(String value) async {
     if (_busy) return;
+    final l10n = AppLocalizations.of(context)!;
     if (_first == null) {
       _pad.currentState?.clear();
       setState(() {
@@ -36,7 +38,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       _pad.currentState?.clear();
       setState(() {
         _first = null;
-        _error = "PINs don't match. Try again.";
+        _error = l10n.pinMismatch;
       });
       return;
     }
@@ -55,15 +57,12 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final confirming = _first != null;
     return PopScope(
       canPop: false,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Set up your PIN'),
-          automaticallyImplyLeading: false,
-        ),
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -74,7 +73,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      confirming ? 'Confirm your PIN' : 'Create a 4-digit PIN',
+                      confirming ? l10n.pinConfirmPrompt : l10n.pinCreatePrompt,
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: AppSpacing.lg),

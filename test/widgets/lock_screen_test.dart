@@ -14,6 +14,7 @@ import 'package:savings_app/services/secret_store.dart';
 
 import '../helpers/in_memory_secret_store.dart';
 import '../helpers/throwing_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 void main() {
   late InMemorySecretStore store;
@@ -42,6 +43,8 @@ void main() {
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         navigatorKey: appNavigatorKey,
         routes: {
           '/login': (ctx) => Scaffold(

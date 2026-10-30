@@ -1,0 +1,184 @@
+{
+  "@@locale": "en",
+  "appName": "KoinsMFB",
+  "brandLogoLabel": "KoinsMFB logo",
+  "createSavings": "Create savings",
+  "next": "Next",
+  "tryAgain": "Try again",
+  "savingsLoadError": "Could not load your savings.",
+  "savingsEmpty": "No savings plans yet. Create your first one.",
+  "percentValue": "{percent}%",
+  "@percentValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingSlide1Title": "Keep your savings in view",
+  "onboardingSlide1Body": "See your balance and your savings in one clear place.",
+  "onboardingSlide2Title": "Plan for what matters",
+  "onboardingSlide2Body": "Set a goal, pick a plan and follow your progress towards it.",
+  "onboardingSlide3Title": "Your details stay protected",
+  "onboardingSlide3Body": "Your account is protected by your login, so only you can see it.",
+  "onboardingSkip": "Skip",
+  "onboardingGetStarted": "Get started",
+  "onboardingSaveError": "Couldn't save your progress. Please try again.",
+  "loginWelcomeBack": "Welcome back",
+  "loginSubtitle": "Sign in to manage your savings",
+  "loginEmailLabel": "Email address",
+  "loginPasswordLabel": "Password",
+  "loginShowPassword": "Show password",
+  "loginHidePassword": "Hide password",
+  "loginSubmit": "Log in",
+  "loginForgotPassword": "Forgot password?",
+  "loginCreateAccount": "Create account",
+  "loginComingSoon": "Coming soon",
+  "loginGenericError": "Something went wrong. Please try again.",
+  "welcomeNotificationTitle": "Welcome to KoinsMFB",
+  "welcomeNotificationBody": "Your savings are one tap away.",
+  "pinSetupTitle": "Set up your PIN",
+  "pinCreatePrompt": "Create a 4-digit PIN",
+  "pinConfirmPrompt": "Confirm your PIN",
+  "pinMismatch": "PINs don't match. Try again.",
+  "pinDelete": "Delete",
+  "biometricTitle": "Biometric unlock",
+  "biometricHeadline": "Unlock faster with biometrics",
+  "biometricBody": "Use your fingerprint or face instead of typing your PIN. Your PIN still works either way.",
+  "biometricEnable": "Enable",
+  "biometricNotNow": "Not now",
+  "biometricConfirmReason": "Confirm to enable biometric unlock",
+  "biometricSetupFailed": "Biometrics weren't set up. You can still unlock with your PIN.",
+  "lockEnterPin": "Enter your PIN",
+  "lockUseBiometrics": "Use biometrics",
+  "lockUnlockReason": "Unlock KoinsMFB",
+  "lockTooManyAttempts": "Too many attempts. Please log in again.",
+  "lockIncorrectPin": "Incorrect PIN. {count, plural, =1{1 attempt} other{{count} attempts}} left.",
+  "@lockIncorrectPin": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lockCheckError": "Could not check your PIN. Please try again.",
+  "dashboardGreeting": "Good Morning, {name}",
+  "@dashboardGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardViewProducts": "View products",
+  "dashboardRecentSavings": "Recent savings",
+  "dashboardSeeAll": "See all",
+  "dashboardTotalSavings": "Total savings",
+  "dashboardProfileTooltip": "Open profile",
+  "dashboardHideAmount": "Hide amount",
+  "dashboardShowAmount": "Show amount",
+  "productsTitle": "Savings products",
+  "productsSearchHint": "Search savings products",
+  "productsClearSearch": "Clear search",
+  "productsFlexibleOnly": "Flexible only",
+  "productsLoadError": "Could not load products.",
+  "productsNoMatch": "No products match your search.",
+  "productInterestChip": "{rate}% p.a.",
+  "@productInterestChip": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "productViewDetails": "View details",
+  "productDetailsTitle": "Plan details",
+  "statInterestRate": "Interest rate",
+  "statMinimumDeposit": "Minimum deposit",
+  "statDuration": "Duration",
+  "planSavedLabel": "saved",
+  "planProductType": "Product type",
+  "planTarget": "Target",
+  "planSavedSoFar": "Saved so far",
+  "planMonthlyContribution": "Monthly contribution",
+  "planDuration": "Duration",
+  "planDurationMonths": "{months} months",
+  "@planDurationMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "allSavingsTitle": "All savings",
+  "planTileSubtitle": "{productType} · Monthly",
+  "@planTileSubtitle": {
+    "placeholders": {
+      "productType": {
+        "type": "String"
+      }
+    }
+  },
+  "planTilePerMonth": "{amount} / mo",
+  "@planTilePerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "createBackToDashboard": "Back to dashboard",
+  "createSuccess": "Savings Created Successfully",
+  "createSaveError": "Could not save your savings. Please try again.",
+  "createReviewTitle": "Review your plan",
+  "reviewName": "Name",
+  "reviewProduct": "Product",
+  "reviewTarget": "Target",
+  "reviewMonthly": "Monthly",
+  "reviewMonths": "Months",
+  "reviewOpeningDeposit": "Opening deposit",
+  "createSubmit": "Create",
+  "nameStepTitle": "What are you saving for?",
+  "nameStepLabel": "Savings name",
+  "productStepTitle": "Choose a product",
+  "productStepSummary": "{rate}% a year · {duration} · from {minDeposit} a month",
+  "@productStepSummary": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "minDeposit": {
+        "type": "String"
+      }
+    }
+  },
+  "amountsTitle": "How much, and for how long?",
+  "amountsSubtitle": "Fill in two. We work out the third.",
+  "amountsTargetLabel": "Target amount",
+  "amountsMonthlyLabel": "Monthly amount",
+  "amountsMonthsLockedLabel": "Months",
+  "amountsMonthsLabel": "Months (1 to 60)",
+  "amountsOpeningLabel": "Opening deposit (optional)",
+  "amountsAdjust": "Adjust",
+  "amountsSummary": "I'll save {monthly} every month for {count, plural, =1{1 month} other{{count} months}}.",
+  "@amountsSummary": {
+    "placeholders": {
+      "monthly": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileTitle": "Profile",
+  "profileLoadError": "Could not load your profile.",
+  "profileEmail": "Email",
+  "profilePhone": "Phone number",
+  "profileLogout": "Logout",
+  "notificationsTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet"
+}

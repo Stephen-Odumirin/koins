@@ -20,6 +20,7 @@ import 'screens/savings/create_savings_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'widgets/lock_gate.dart';
 import 'services/plan_database.dart';
+import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +52,10 @@ class SavingsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KoinsMFB',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
       navigatorKey: appNavigatorKey,
       builder: (context, child) => LockGate(child: child!),
       theme: AppTheme.light(),

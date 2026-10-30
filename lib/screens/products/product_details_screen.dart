@@ -5,6 +5,7 @@ import '../savings/create_savings_screen.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/staggered_reveal.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   const ProductDetailsScreen({super.key, required this.product});
@@ -13,11 +14,12 @@ class ProductDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Plan details')),
+      appBar: AppBar(title: Text(l10n.productDetailsTitle)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
@@ -55,16 +57,19 @@ class ProductDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _Stat(
-                        label: 'Interest rate',
-                        value: '${product.interestRate.round()}%',
+                        label: l10n.statInterestRate,
+                        value: l10n.percentValue(product.interestRate.round()),
                       ),
                       const SizedBox(width: 12),
                       _Stat(
-                        label: 'Minimum deposit',
+                        label: l10n.statMinimumDeposit,
                         value: formatNaira(product.minDeposit),
                       ),
                       const SizedBox(width: 12),
-                      _Stat(label: 'Duration', value: product.durationLabel),
+                      _Stat(
+                        label: l10n.statDuration,
+                        value: product.durationLabel,
+                      ),
                     ],
                   ),
                 ),
@@ -79,7 +84,7 @@ class ProductDetailsScreen extends StatelessWidget {
                           CreateSavingsScreen(initialProduct: product),
                     ),
                   ),
-                  child: const Text('Create savings'),
+                  child: Text(l10n.createSavings),
                 ),
               ),
             ],

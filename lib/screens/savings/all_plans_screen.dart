@@ -9,6 +9,7 @@ import '../../widgets/empty_view.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/savings_plan_tile.dart';
 import 'saved_plan_details_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Every saved plan, newest first.
 class AllPlansScreen extends ConsumerWidget {
@@ -16,11 +17,12 @@ class AllPlansScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(savingsPlansProvider);
     final plans = ref.watch(recentPlansProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('All savings')),
+      appBar: AppBar(title: Text(l10n.allSavingsTitle)),
       body: state.when(
         loading: () => Center(
           child: BrandLoader(
@@ -29,14 +31,14 @@ class AllPlansScreen extends ConsumerWidget {
           ),
         ),
         error: (_, _) => ErrorView(
-          message: 'Could not load your savings.',
+          message: l10n.savingsLoadError,
           onRetry: () => ref.invalidate(savingsPlansProvider),
         ),
         data: (_) {
           if (plans.isEmpty) {
-            return const EmptyView(
+            return EmptyView(
               icon: Icons.savings_outlined,
-              message: 'No savings plans yet. Create your first one.',
+              message: l10n.savingsEmpty,
             );
           }
           return Center(

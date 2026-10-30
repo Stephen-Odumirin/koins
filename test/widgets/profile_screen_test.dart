@@ -12,6 +12,7 @@ import 'package:savings_app/services/user_api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/in_memory_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 const _userJson =
     '{"firstName":"Emily","lastName":"Johnson","email":"emily@example.com","phone":"+1 555 0100"}';
@@ -44,6 +45,8 @@ Future<void> _pump(
         ),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         routes: {'/login': (_) => const Scaffold(body: Text('LOGIN'))},
         home: const ProfileScreen(),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:savings_app/models/app_notification.dart';
 import 'package:savings_app/providers/notifications_provider.dart';
 import 'package:savings_app/screens/notifications/notifications_screen.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 Future<ProviderContainer> _pump(
   WidgetTester tester,
@@ -17,7 +18,9 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: NotificationsScreen()),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,home: NotificationsScreen()),
     ),
   );
   await tester.pumpAndSettle();

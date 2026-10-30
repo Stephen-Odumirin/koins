@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_biometric_authenticator.dart';
 import '../helpers/in_memory_secret_store.dart';
+import 'package:savings_app/l10n/app_localizations.dart';
 
 void main() {
   late ProviderContainer container;
@@ -31,6 +32,8 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
           routes: {
             '/dashboard': (_) => const Scaffold(body: Text('DASHBOARD')),
           },

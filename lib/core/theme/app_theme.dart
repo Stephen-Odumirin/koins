@@ -21,11 +21,13 @@ class AppTheme {
       onSurface: isDark ? null : AppColors.heading,
       onSurfaceVariant: isDark ? null : AppColors.body,
     );
-    const pill = StadiumBorder();
+    final buttonShape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppSpacing.radiusButton),
+    );
     final fieldFill = isDark ? AppColors.darkCard : Colors.white;
     OutlineInputBorder border(Color color, [double width = 1]) =>
         OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(999)),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusField),
           borderSide: BorderSide(color: color, width: width),
         );
     return ThemeData(
@@ -35,10 +37,29 @@ class AppTheme {
       fontFamily: 'Manrope',
       // Manrope has no U+20A6 (Naira). Roboto ships with Android and has it.
       fontFamilyFallback: const ['Roboto', 'Noto Sans'],
-      textTheme: const TextTheme(
-        headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
-        titleMedium: TextStyle(fontWeight: FontWeight.w700),
-        bodyMedium: TextStyle(height: 1.4, fontWeight: FontWeight.w400),
+      textTheme: Typography.material2021().black
+          .merge(const TextTheme(
+            headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+            titleMedium: TextStyle(fontWeight: FontWeight.w700),
+            bodyMedium: TextStyle(height: 1.4, fontWeight: FontWeight.w400),
+          ))
+          .apply(
+            fontFamily: 'Manrope',
+            displayColor: isDark ? null : AppColors.heading,
+            bodyColor: isDark ? null : AppColors.heading,
+          ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: TextStyle(
+          fontFamily: 'Manrope',
+          fontFamilyFallback: const ['Roboto', 'Noto Sans'],
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: isDark ? null : AppColors.heading,
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -58,18 +79,19 @@ class AppTheme {
         color: isDark ? AppColors.darkCard : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          side: const BorderSide(color: AppColors.outline),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(AppSpacing.keyMinSize),
-          shape: pill,
+          shape: buttonShape,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(AppSpacing.keyMinSize),
-          shape: pill,
+          shape: buttonShape,
           foregroundColor: scheme.primary,
           side: BorderSide(color: scheme.primary),
         ),

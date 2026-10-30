@@ -5,6 +5,7 @@ import '../../models/savings_plan.dart';
 import '../../utils/formatters.dart';
 import '../../utils/plan_progress.dart';
 import '../../widgets/progress_ring.dart';
+import '../../l10n/app_localizations.dart';
 
 /// One saved plan: its facts and how much of the target is saved.
 class SavedPlanDetailsScreen extends StatelessWidget {
@@ -14,6 +15,7 @@ class SavedPlanDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final progress = planProgress(plan);
@@ -42,10 +44,10 @@ class SavedPlanDetailsScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              '${(progress * 100).round()}%',
+                              l10n.percentValue((progress * 100).round()),
                               style: theme.textTheme.headlineSmall,
                             ),
-                            Text('saved', style: theme.textTheme.bodySmall),
+                            Text(l10n.planSavedLabel, style: theme.textTheme.bodySmall),
                           ],
                         ),
                       ),
@@ -65,14 +67,17 @@ class SavedPlanDetailsScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _Row('Product type', plan.productType),
-                      _Row('Target', formatNaira(plan.targetAmount)),
-                      _Row('Saved so far', formatNaira(plan.savedAmount)),
+                      _Row(l10n.planProductType, plan.productType),
+                      _Row(l10n.planTarget, formatNaira(plan.targetAmount)),
+                      _Row(l10n.planSavedSoFar, formatNaira(plan.savedAmount)),
                       _Row(
-                        'Monthly contribution',
+                        l10n.planMonthlyContribution,
                         formatNaira(plan.monthlyContribution),
                       ),
-                      _Row('Duration', '${plan.durationMonths} months'),
+                      _Row(
+                        l10n.planDuration,
+                        l10n.planDurationMonths(plan.durationMonths),
+                      ),
                     ],
                   ),
                 ),
