@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Original mark for this project: a sprout growing from a coin -->
-  <rect width="64" height="64" rx="16" fill="#0E5E5C"/>
-  <circle cx="32" cy="42" r="13" fill="#D9B88F"/>
-  <path d="M32 36 C32 26 26 20 16 20 C16 30 22 36 32 36 Z" fill="#E8F3F2"/>
-  <path d="M32 33 C32 25 37 19 47 19 C47 28 42 33 32 33 Z" fill="#E8F3F2"/>
-  <rect x="31" y="30" width="2" height="8" rx="1" fill="#E8F3F2"/>
-</svg>

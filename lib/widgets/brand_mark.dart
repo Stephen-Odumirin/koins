@@ -9,10 +9,10 @@ class BrandMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(
-      'assets/brand/logo.svg',
+      'assets/icons/login_logo.svg',
       width: size,
       height: size,
-      semanticsLabel: 'Savings app logo',
+      semanticsLabel: 'KoinsMFB logo',
     );
   }
 }

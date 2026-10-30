@@ -1,0 +1,122 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+
+import '../../providers/providers.dart';
+import '../../utils/startup_route.dart';
+import '../../widgets/brand_mark.dart';
+
+/// Shows the brand while the loading animation plays, then routes to the
+/// first screen. Never stays longer than [_maxWait].
+class SplashScreen extends ConsumerStatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  static const _maxWait = Duration(seconds: 3);
+  static const _reducedMotionWait = Duration(seconds: 2);
+
+  late final AnimationController _controller;
+  final Completer<void> _animationDone = Completer<void>();
+  Timer? _maxTimer;
+  Timer? _reducedTimer;
+  bool _navigated = false;
+  bool _reduced = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed &&
+            !_animationDone.isCompleted) {
+          _animationDone.complete();
+        }
+      });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Read once; _start and build use the same value.
+    _reduced = MediaQuery.disableAnimationsOf(context);
+  }
+
+  Future<void> _start() async {
+    if (!mounted) return;
+    if (_reduced) {
+      _reducedTimer = Timer(_reducedMotionWait, () {
+        if (!_animationDone.isCompleted) _animationDone.complete();
+      });
+    }
+    final Future<void> wait = _animationDone.future;
+    // The timeout wins when the animation is slow or fails to load.
+    final timeout = Completer<void>();
+    _maxTimer = Timer(_maxWait, () {
+      if (!timeout.isCompleted) timeout.complete();
+    });
+    await Future.any<void>([wait, timeout.future]);
+    _maxTimer?.cancel();
+    _reducedTimer?.cancel();
+    _goNext();
+  }
+
+  void _goNext() {
+    if (!mounted || _navigated) return;
+    _navigated = true;
+    final storage = ref.read(localStorageProvider);
+    final destination = resolveStartupDestination(
+      loggedIn: storage.loggedInEmail != null,
+      onboardingComplete: storage.onboardingComplete,
+    );
+    final route = switch (destination) {
+      StartupDestination.dashboard => '/dashboard',
+      StartupDestination.login => '/login',
+      StartupDestination.onboarding => '/onboarding',
+    };
+    Navigator.of(context).pushReplacementNamed(route);
+  }
+
+  @override
+  void dispose() {
+    _maxTimer?.cancel();
+    _reducedTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BrandMark(key: Key('splash-logo'), size: 96),
+            if (!_reduced) ...[
+              const SizedBox(height: 24),
+              Lottie.asset(
+                'assets/animation_icon/Loading.json',
+                controller: _controller,
+                width: 120,
+                height: 120,
+                onLoaded: (composition) {
+                  _controller.duration = composition.duration;
+                  _controller.forward();
+                },
+                errorBuilder: (_, __, ___) => const SizedBox(height: 120),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

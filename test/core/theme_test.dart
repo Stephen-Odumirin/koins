@@ -10,4 +10,21 @@ void main() {
   test('dark theme is dark', () {
     expect(AppTheme.dark().colorScheme.brightness, Brightness.dark);
   });
+
+  test('dark primary colour comes from the Koins green seed', () {
+    expect(
+      AppTheme.dark().colorScheme.primary,
+      ColorScheme.fromSeed(
+        seedColor: const Color(0xFF81CB50),
+        brightness: Brightness.dark,
+      ).primary,
+    );
+  });
+
+  test('primary colour comes from the Koins green seed', () {
+    expect(
+      AppTheme.light().colorScheme.primary,
+      ColorScheme.fromSeed(seedColor: const Color(0xFF81CB50)).primary,
+    );
+  });
 }

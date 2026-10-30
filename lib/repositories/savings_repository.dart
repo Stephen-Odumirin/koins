@@ -1,11 +1,11 @@
 import '../models/savings_plan.dart';
 import '../models/savings_product.dart';
-import '../services/local_storage_service.dart';
+import '../services/plan_database.dart';
 
 class SavingsRepository {
-  SavingsRepository(this._storage);
+  SavingsRepository(this._planDb);
 
-  final LocalStorageService _storage;
+  final PlanDatabase _planDb;
 
   // Seed data from the brief. Local, so the app works offline.
   static const products = [
@@ -78,10 +78,7 @@ class SavingsRepository {
 
   Future<List<SavingsProduct>> getProducts() async => products;
 
-  Future<List<SavingsPlan>> getUserPlans() async => _storage.loadPlans();
+  Future<List<SavingsPlan>> getUserPlans() => _planDb.loadPlans();
 
-  Future<void> createPlan(SavingsPlan plan) async {
-    final current = _storage.loadPlans();
-    await _storage.savePlans([...current, plan]);
-  }
+  Future<void> createPlan(SavingsPlan plan) => _planDb.insertPlan(plan);
 }

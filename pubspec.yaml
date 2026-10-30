@@ -39,9 +39,14 @@ dependencies:
   http: ^1.6.0
   intl: ^0.20.2
   flutter_svg: ^2.2.3
+  lottie: ^3.3.1
+  sqflite: ^2.4.2
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -50,6 +55,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  sqflite_common_ffi: ^2.3.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -59,8 +66,12 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/brand/
-    - assets/fonts/
+    - assets/animation_icon/Loading.json
+    - assets/icons/login_logo.svg
+    - assets/icons/app_icon2.png
+    - assets/images/onboard1.png
+    - assets/images/onboard2.png
+    - assets/images/onboard3.png
 
   fonts:
     - family: Manrope
@@ -108,3 +119,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon2.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#81CB50"
+  adaptive_icon_foreground: "assets/icons/app_icon2.png"

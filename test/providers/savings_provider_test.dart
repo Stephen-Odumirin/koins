@@ -5,11 +5,18 @@ import 'package:savings_app/providers/providers.dart';
 import 'package:savings_app/providers/savings_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/memory_plan_db.dart';
+
 Future<ProviderContainer> _container() async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
+  final planDb = await openMemoryPlanDb();
+  addTearDown(planDb.close);
   final container = ProviderContainer(
-    overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      planDatabaseProvider.overrideWithValue(planDb),
+    ],
   );
   addTearDown(container.dispose);
   return container;
